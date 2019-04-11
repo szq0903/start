@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{$temp.title}-爱臣同乡</title>
+    <meta http-equiv="Content-Type" content="text/html;">
+    <meta name="viewport"
+          content="initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="stylesheet" href="/theme/web/style/swiper.min.css">
+    <link href="/theme/web/style/reset.css" rel="stylesheet">
+    <link href="/theme/web/style/style.css" rel="stylesheet">
+
+    <script src="/theme/web/js/jquery.min.js"></script>
+    <script src="/theme/web/js/swiper.min.js"></script>
+</head>
+<style>
+    body {
+        padding: 0px;
+        margin: 0px;
+        padding-top: .5rem;
+    }
+</style>
+<body>
+<header id="site-header">
+    <div data-ga-event="全部行业">
+        <a id="goback" href="javascript:;" onclick="window.history.back(); return false;">返回</a>
+    </div>
+
+</header>
+<div class="section-wrap zx-article">
+    <div class="article-wrap">
+        <h1>{$temp.title}</h1>
+
+        <div class="time-wrap">
+            <div class="scan_icon" style="display: none;"></div>
+            <div class="scan_count" style="display: none;">1</div>
+            <div>{$temp.update}</div>
+        </div>
+
+        <!-- 资讯文章container -->
+        <div class="content">
+            {$temp.body}
+        </div>
+        <div class="article_origin">
+        </div>
+        <div class="complaint_notice">
+            <div id="complaint" class="complaint"><div class="c_icon"></div><div class="ts">投诉</div></div>
+            <div id="notice" class="notice"><div class="n_icon"></div><div class="sm">免责声明</div></div>
+        </div>
+    </div>
+    <div class="qr-wrap">
+        <div class="title">同镇便民信息,大事小情,都在 58同镇 </div>
+        <div class="tip"><div>长按二维码，加站长微信，免费发信息</div></div>
+        <div class="down"></div>
+        <div class="zz_qr">
+            <img src="{$agent.qcode}">
+        </div>
+    </div>
+
+</div>
+<div class="section-wrap">
+    <h2 class="section-title">相关阅读</h2>
+</div>
+
+<div class="footBar">
+    <ul class="footBtn">
+        <li class="indexBtn_hd indexBtn_on_hd"><a href="#"><i></i>首页</a></li>
+        <li class="publishBtn_hd"><a href="#"><i></i>招商发布</a></li>
+        <li class="userBtn_hd"><a href="#"><i></i>我的</a></li>
+    </ul>
+</div>
+
+
+<script src="/theme/web/js/rem.js"></script>
+<script>
+$(document).ready(function(){
+  $("#notice").click(function(){
+      location.href = '/web/index/disclaimer';
+  });
+  $("#complaint").click(function(){
+      location.href = '/web/index/complaint';
+   });
+});
+</script>
+
+</body>
+</html>

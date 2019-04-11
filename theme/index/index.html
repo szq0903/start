@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>爱臣同乡-{$area.name}</title>
+    <meta name="Keywords" content="{$area.name}分类信息,{$area.name}生活服务平台">
+    <meta name="Description"
+          content="爱臣同乡{$area.name}分类信息网,为你提供招聘求职,房产交易,车辆交易,物品租赁,交友等分类内容,您可以随时免费发布,查阅信息咨询,爱臣同乡{$area.name}-专业的乡镇生活信息服务平台.">
+    <meta name="Keywords" content="{$area.name}分类信息,{$area.name}生活服务平台">
+    <meta http-equiv="Content-Type" content="text/html;">
+    <meta name="viewport"
+          content="initial-scale=1.0,maximum-scale=1.0,minimum-scale=1.0,user-scalable=0,width=device-width">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link href="/theme/web/style/reset.css" rel="stylesheet">
+    <link href="/theme/web/style/style.css" rel="stylesheet">
+</head>
+<body>
+<div class="top">
+    给人人带来有价值的商业信息平台
+</div>
+<div class="door">
+    <a href="/web/index/index1/act/add">
+        <img src="/theme/web/images/door.gif">
+    </a>
+    <p>
+        进入幸福门<br>
+        <span>已有{$sysinfo.p_number}人进入</span>
+    </p>
+
+</div>
+<div class="logo">
+    <img src="/theme/web/images/logo.png">
+    <form method="get" action="/web/index/searchs"  name="myForm">
+        <div class="form_b">
+            <input type="text" name="keys" class="kw" value="">
+            <input type="submit" id="su" value="爱臣搜索" class="s_btn">
+        </div>
+    </form>
+</div>
+<section>
+    <div class="data-wrap">
+
+        {volist name="headart" id="vo"}
+        {if $vo.imgs_num >= 3}
+        <a class="data-item  multiple-img-item" data-infoid="{$vo.id}">
+            <h3 class="item-title">{$vo.title}</h3>
+            <div class="item-imgs">
+                {volist name="vo['imgs']" id="sub" length='3'}
+                <div class="img-item"><img class="lazy" src="{$sub}" style="opacity: 1;"></div>
+                {/volist}
+            </div>
+            <div class="item-media">
+                <span class="author" style="display:none">{$vo.title}</span>
+                <div class="pv_scan"><span class="scan_icon"></span><span class="scan_count">{$vo.click}</span></div>
+                <span class="media-time">{$vo.update}</span>
+            </div>
+        </a>
+        {/if}
+        {if $vo.imgs_num < 3 && $vo.imgs_num > 0}
+        <a class="data-item  single-img-item" data-infoid="{$vo.id}">
+            <h3 class="item-title">{$vo.title}</h3>
+            <div class="item-imgs">
+                <div class="img-item"><img class="lazy" src="{$vo.imgs.0}" style="opacity: 1;"></div>
+            </div>
+            <div class="item-media">
+                <span class="author">{$vo.title}</span>
+                <div class="pv_scan" style="display:none">
+                    <span class="scan_icon"></span>
+                    <span class="scan_count">{$vo.click}</span>
+                </div>
+                <span class="media-time">{$vo.update}</span>
+            </div>
+        </a>
+        {/if}
+        {if $vo.imgs_num == 0}
+        <a class="data-item  default-item" data-infoid="{$vo.id}">
+            <h3 class="item-title">{$vo.title}</h3>
+            <div class="item-media">
+                <div class="pv_scan"><span class="scan_icon"></span><span class="scan_count">{$vo.click}</span></div>
+                <span class="media-time">{$vo.update}</span>
+            </div>
+        </a>
+        {/if}
+        {/volist}
+    </div>
+</section>
+
+
+<div class="footBar">
+    <ul class="footBtn">
+        <li class="indexBtn_hd indexBtn_on_hd"><a href="/web/"><i></i>首页</a></li>
+        <li class="publishBtn_hd"><a href="#"><i></i>招商发布</a></li>
+        <li class="userBtn_hd"><a href="/web/index/member"><i></i>我的</a></li>
+    </ul>
+</div>
+
+<script src="/theme/web/js/jquery.min.js"></script>
+<script src="/theme/web/js/rem.js"></script>
+<script type="text/javascript">
+    $(document).ready(function(){
+        $(".data-wrap").on("click",".data-item" ,function(){
+            var id = $(this).data('infoid');
+            window.location.href = "/web/index/hartdetail/id/"+id;
+        });
+    });
+</script>
+</body>
+</html>
