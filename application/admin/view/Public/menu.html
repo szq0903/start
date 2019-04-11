@@ -29,25 +29,13 @@
 
         		<li {if $act=='Sysinfos'}class="active"{/if}><a href="/admin/sysinfos"><i class="fa fa-cogs"></i> <span>系统设置</span></a></li>
 
-            	<li {if $act=='Account'}class="active"{/if}><a href="/account"><i class="fa fa-users"></i> <span>用户管理</span></a></li>
+            	<li {if $act=='Account'}class="active"{/if}><a href="/admin/account"><i class="fa fa-users"></i> <span>用户管理</span></a></li>
 
-     			<li {if $act=='Magents'}class="active"{/if}><a href="/magents"><i class="fa fa-users"></i> <span>代理管理</span></a></li>
+				<li {if $act=='Areas'}class="active"{/if}><a href="{:url('/admin/areas')}"><i class="fa fa-cubes"></i> <span>地区管理</span></a></li>
 
-     			<li {if $act=='Members'}class="active"{/if}><a href="/members"><i class="fa fa-user-md"></i> <span>会员管理</span></a></li>
+				<li {if $act=='Clear'}class="active"{/if}><a href="/admin/clear"><i class="fa fa-trash-o"></i> <span>清理缓存</span></a></li>
 
-     			<li {if $act=='Areas'}class="active"{/if}><a href="{:url('index/areas')}"><i class="fa fa-cubes"></i> <span>地区管理</span></a></li>
 
-     			<li {if $act=='Withdraws'}class="active"{/if}><a href="{:url('index/withdraws')}"><i class="fa fa-money"></i> <span>提现管理</span></a></li>
-
-    			<li {if $act=='Sorts'}class="active"{/if}><a href="{:url('index/sorts')}"><i class="fa fa-sitemap"></i> <span>栏目管理</span></a></li>
-
-    			<li {if $act=='Articles'}class="active"{/if}><a href="/articles"><i class="fa fa-file-text-o"></i> <span>文章管理</span></a></li>
-
-    			<li {if $act=='Resumes'}class="active"{/if}><a href="/resumes"><i class="fa fa-list-alt"></i> <span>简历管理</span></a></li>
-
-    			<li {if $act=='Comments'}class="active"{/if}><a href="/comments"><i class="fa fa-list-alt"></i> <span>评论管理</span></a></li>
-
-    			<li {if $act=='Clear'}class="active"{/if}><a href="/clear"><i class="fa fa-trash-o"></i> <span>清理缓存</span></a></li>
 
 				<li  style="display: none;" {if $act=='Moulds' || $act=='Fields'}class="active"{/if}><a href="/moulds"><i class="fa fa-trash-o"></i> <span>模型管理</span></a></li>
 

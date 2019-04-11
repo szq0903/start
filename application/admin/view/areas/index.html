@@ -7,11 +7,11 @@
     {include file="Public/headerbar" /}
         
     <div class="pageheader">
-      <h2><i class="fa fa-table"></i> 地区管理 <a class="btn btn-danger" href="{:url('index/areas/add',['parent_id'=>$parent_id,'level'=>$level])}">添加地区</a></h2>
+      <h2><i class="fa fa-table"></i> 地区管理 <a class="btn btn-danger" href="{:url('admin/areas/add',['parent_id'=>$parent_id,'level'=>$level])}">添加地区</a></h2>
       <div class="breadcrumb-wrapper">
         <span class="label">当前位置:</span>
         <ol class="breadcrumb">
-          <li><a href="/areas">地区管理</a></li>
+          <li><a href="/admin/areas">地区管理</a></li>
           <li class="active">地区管理</li>
         </ol>
       </div>
@@ -84,7 +84,7 @@
                         <td>{$vo.name}</td>
                      	<td>{$vo.short_name}</td>
                         <td>{if $vo.level ==1}省/直辖市{elseif $vo.level ==2}地级市{elseif $vo.level ==3}区县{elseif $vo.level ==4}镇/街道{/if}</td>
-                        <td><a class="fa fa-edit" href="{:url('index/areas/edit',['id'=>$vo.id])}"></a>   <a class="fa fa-trash-o" href="{:url('index/areas/del',['id'=>$vo.id])}"></a></td>
+                        <td><a class="fa fa-edit" href="{:url('admin/areas/edit',['id'=>$vo.id])}"></a>   <a class="fa fa-trash-o" href="{:url('admin/areas/del',['id'=>$vo.id])}"></a></td>
                       </tr>
                       {/volist}
                      

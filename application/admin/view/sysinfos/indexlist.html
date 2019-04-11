@@ -1,0 +1,66 @@
+{include file="Public/head_base" /}
+
+{include file="Public/menu" /}
+
+<div class="mainpanel">
+    {include file="Public/headerbar" /}
+    <div class="pageheader">
+        <h2><i class="fa fa-table"></i> 配置管理 <a class="btn btn-danger" href="{:url('admin/sysinfos/add')}">添加配置</a></h2>
+        <div class="breadcrumb-wrapper">
+            <span class="label">当前位置:</span>
+            <ol class="breadcrumb">
+                <li><a href="{:url('admin/sysinfos/indexlist')}">配置管理</a></li>
+                <li class="active">配置管理</li>
+            </ol>
+        </div>
+    </div>
+
+    <div class="contentpanel">
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table table-success table-striped mb10">
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>排序</th>
+                            <th>表单提示文字</th>
+                            <th>字段名</th>
+                            <th>数据类型</th>
+                            <th>操作</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {volist name="list" id="vo" mod="2"}
+                        {eq name="mod" value="0"}
+                        <tr class="gradeA odd">
+                            {else/}
+                        <tr class="gradeA even">
+                            {/eq}
+                            <td>{$vo.id}</td>
+                            <td>{$vo.rank}</td>
+                            <td>{$vo.itemname}</td>
+                            <td>{$vo.fieldname}</td>
+
+                            <td>{$inputlist[$vo.dtype]['name']}</td>
+                            <td>
+                                <a class="fa fa-edit" href="{:url('admin/sysinfos/edit',['id'=>$vo.id])}"></a>
+                                <a class="fa fa-trash-o" href="{:url('admin/sysinfos/del',['id'=>$vo.id])}"></a>
+                            </td>
+                        </tr>
+                        {/volist}
+
+                        </tbody>
+                    </table>
+                </div><!-- table-responsive -->
+            </div>
+            <!-- col-md-12 -->
+
+        </div><!-- row -->
+    </div><!-- contentpanel -->
+
+</div><!-- mainpanel -->
+
+
+{include file="Public/footer_base" /}

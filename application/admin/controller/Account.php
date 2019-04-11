@@ -1,9 +1,7 @@
 <?php
-namespace app\index\controller;
-use think\Controller;
+namespace app\admin\controller;
 use think\Request;
-use app\index\model\User;
-use think\Session;
+use app\admin\model\User;
 
 /**
  * 用户管理控制器
@@ -11,15 +9,13 @@ use think\Session;
  * @email  6731834@163.com
  * @date 2017年6月15日 上午11:07:56
  */
-class Account extends Controller
+class Account extends Base
 {
-	public $title='爱臣同乡管理系统';
-
 
 	public function _initialize()
 	{
-		check();
-        $this->assign('menu', getLeftMenu());
+        //调用父类的构造函数
+        parent::_initialize();
 	}
 
 	/**
@@ -96,7 +92,7 @@ class Account extends Controller
 			$this->error('您要删除的用户不存在！');
 		}else{
 			$user->delete();
-			$this->success('删除用户成功！','index/account/index');
+			$this->success('删除用户成功！','admin/account/index');
 		}
 		$this->assign('title','删除用户-'.$this->title);
 		$request = Request::instance();

@@ -127,7 +127,6 @@ class Fields extends Controller
 	 * @return \think\mixed
 	 */
 	public function edit($id) {
-
         $field= Field::get($id);
 
         //判断模型是否存在

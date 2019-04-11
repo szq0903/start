@@ -1,8 +1,7 @@
 <?php
-namespace app\index\controller;
-use think\Controller;
+namespace app\admin\controller;
 use think\Request;
-use app\index\model\Area;
+use app\admin\model\Area;
 
 /**
  * 地区管理
@@ -10,14 +9,13 @@ use app\index\model\Area;
  * @email  6731834@163.com
  * @date 2017年6月16日 上午10:21:27
  */
-class Areas extends Controller
+class Areas extends Base
 {
-	public $title='SEOCRM管理系统';
-
+    public $modelName = 'Areas';
 	public function _initialize()
 	{
-		check();
-        $this->assign('menu', getLeftMenu());
+        //调用父类的构造函数
+        parent::_initialize();
 	}
 
 	/**
@@ -168,7 +166,7 @@ class Areas extends Controller
 			$this->error('您要删除的地区不存在！');
 		}else{
 			$area ->delete();
-			$this->success('删除地区成功！','index/areas/index');
+			$this->success('删除地区成功！','admin/areas/index');
 		}
 		$this->assign('title','删除地区-'.$this->title);
 		$request = Request::instance();

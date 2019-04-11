@@ -357,6 +357,7 @@ class App
                 // 模块请求缓存检查
                 $request->cache($config['request_cache'], $config['request_cache_expire'], $config['request_cache_except']);
             } else {
+                return json(['status'=> 404, 'module not exists:'.$module]);
                 throw new HttpException(404, 'module not exists:' . $module);
             }
         } else {

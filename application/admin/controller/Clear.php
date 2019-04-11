@@ -1,7 +1,6 @@
 <?php
-namespace app\index\controller;
-use think\Controller;
-use think\Request;
+namespace app\admin\controller;
+
 use think\Cache;
 use think\Log;
 /**
@@ -10,15 +9,13 @@ use think\Log;
  * @email  6731834@163.com
  * @date 2017年6月15日 上午11:07:56
  */
-class Clear extends Controller
+class Clear extends Base
 {
-	public $title='SEOCRM管理系统';
-
 
 	public function _initialize()
 	{
-		check();
-
+        //调用父类的构造函数
+        parent::_initialize();
 	}
 
 

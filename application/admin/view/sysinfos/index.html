@@ -1,63 +1,104 @@
 {include file="Public/head_base" /}
 
-	{include file="Public/menu" /}
+{include file="Public/menu" /}
 
-	<div class="mainpanel">
-    
+<script src="/template/js/jquery-1.11.1.min.js"></script>
+<link href="/template/fileinput/fileinput.css" media="all" rel="stylesheet" type="text/css" />
+<style>
+    .form-control.file-caption.kv-fileinput-caption{
+        padding: 7px;
+    }
+    .form-control.file-caption.kv-fileinput-caption  .file-caption-name
+    {
+        line-height: 25px;
+    }
+</style>
+<script src="/template/fileinput/fileinput.js" type="text/javascript"></script>
+<script src="/template/fileinput/zh.js" type="text/javascript"></script>
+
+<div class="mainpanel">
+
     {include file="Public/headerbar" /}
-        
+
     <div class="pageheader">
-      <h2><i class="fa fa-table"></i> 用户管理 <a class="btn btn-danger" href="{:url('index/account/add')}">添加用户</a></h2>
-      <div class="breadcrumb-wrapper">
-        <span class="label">当前位置:</span>
-        <ol class="breadcrumb">
-          <li><a href="/account">用户管理</a></li>
-          <li class="active">用户管理</li>
-        </ol>
-      </div>
+        <h2><i class="fa fa-table"></i> 系统配置 <a class="btn btn-danger" href="{:url('admin/sysinfos/indexlist')}">配置管理</a></h2>
+        <div class="breadcrumb-wrapper">
+            <span class="label">当前位置:</span>
+            <ol class="breadcrumb">
+                <li><a href="/sysinfos">系统配置</a></li>
+                <li class="active">系统配置</li>
+            </ol>
+        </div>
     </div>
-    
+
     <div class="contentpanel">
-      
-      <div class="row">
-        <div class="col-md-12">
-            <div class="table-responsive">
-                <table class="table table-success table-striped mb10">
-                    <thead>
-                      <tr>
-                        <th>ID</th>
-                        <th>用户名</th>
-						<th>修改时间</th>
-                        <th>操作</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                     {volist name="list" id="vo" mod="2"}
-                     {eq name="mod" value="0"}
-                  	 <tr class="gradeA odd">
-                  	 {else/}
-                  	 <tr class="gradeA even">
-                     {/eq}
-                        <td>{$vo.id}</td>
-                        <td>{$vo.user}</td>
-                        <td>{:date('Y-m-d',$vo.addtime)}</td>
-                        <td><a class="fa fa-edit" href="{:url('index/account/edit',['id'=>$vo.id])}"></a>   <a class="fa fa-trash-o" href="{:url('index/account/del',['id'=>$vo.id])}"></a></td>
-                      </tr>
-                      {/volist}
-                     
-                    </tbody>
-                </table>
-                {$list->render()}
-            </div><!-- table-responsive -->
-        </div> 
-        <!-- col-md-12 -->
-        
-      </div><!-- row --> 
+
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <div class="panel-btns">
+                    <a href="" class="panel-close">×</a>
+                    <a href="" class="minimize">−</a>
+                </div>
+                <h4 class="panel-title">用户编辑</h4>
+
+            </div>
+            <div class="panel-body panel-body-nopadding" style="display: block;">
+
+                <form method="post" name="myForm" class="form-horizontal form-bordered">
+
+                    {volist name="formhtml" id="vo" mod="2"}
+                    <div class="form-group">
+                        <label class="col-sm-3 control-label">{$vo['itemname']}：</label>
+                        <div class="col-sm-6"  {if $vo['itemname']=='内容'}style="position: initial"{/if} st>
+                        {$vo['html']}
+                        </div>
+                    </div>
+                    {/volist}
+
+                    <div class="panel-footer" style="display: block;">
+                        <div class="row">
+                            <div class="col-sm-6 col-sm-offset-3">
+
+                                <button class="btn btn-primary" type="submit">提交</button>&nbsp;
+                                <button class="btn btn-default" type="reset">取消</button>
+                            </div>
+                        </div>
+                    </div><!-- panel-footer -->
+
+            </div>
+
+            </form>
+
+        </div><!-- panel-body -->
+
+
+        <!-- row -->
     </div><!-- contentpanel -->
-    
-  </div><!-- mainpanel -->
+
+</div><!-- mainpanel -->
 
 
+</section>
+
+<script src="/template/js/jquery-migrate-1.2.1.min.js"></script>
+<script src="/template/js/jquery-ui-1.10.3.min.js"></script>
+<script src="/template/js/bootstrap.min.js"></script>
+<script src="/template/js/modernizr.min.js"></script>
+<script src="/template/js/jquery.sparkline.min.js"></script>
+<script src="/template/js/toggles.min.js"></script>
+<script src="/template/js/retina.min.js"></script>
+<script src="/template/js/jquery.cookies.js"></script>
+
+<!--<script src="/template/js/flot/jquery.flot.min.js"></script>
+<script src="/template/js/flot/jquery.flot.resize.min.js"></script>
+<script src="/template/js/flot/jquery.flot.spline.min.js"></script>-->
+<script src="/template/js/morris.min.js"></script>
+<script src="/template/js/raphael-2.1.0.min.js"></script>
+<script src="/template/js/custom.js"></script>
+<!--<script src="/template/js/dashboard.js"></script>-->
 
 
-{include file="Public/footer_base" /}
+</body>
+</html>
+
+
