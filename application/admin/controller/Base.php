@@ -9,7 +9,7 @@
 namespace app\admin\controller;
 
 use think\Controller;
-use app\admin\model\Field;
+
 
 
 class Base extends Controller
@@ -24,11 +24,6 @@ class Base extends Controller
         $this->title = config("project_name");
         $this->inputlist = config('inputlist');
         $this->assign('inputlist',$this->inputlist);
-    }
-
-    public function find()
-    {
-        echo 'find'.$this->modelName;
     }
 
     public function _empty()

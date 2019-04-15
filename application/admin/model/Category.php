@@ -2,7 +2,7 @@
 namespace app\admin\model;
 use think\Model;
 
-class Field extends Model
+class Category extends Model
 {
 
 	//自定义初始化

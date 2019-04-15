@@ -1,11 +1,10 @@
 <?php
-namespace app\index\controller;
-use think\Controller;
+namespace app\admin\controller;
 use think\Request;
 use think\Db;
 use think\Config;
-use app\index\model\Field;
-use app\index\model\Mould;
+use app\admin\model\Field;
+use app\admin\model\Mould;
 
 /**
  * 字段管理
@@ -13,18 +12,13 @@ use app\index\model\Mould;
  * @email  6731834@163.com
  * @date 2017年6月16日 上午10:21:27
  */
-class Fields extends Controller
+class Fields extends Base
 {
-	public $title='SEOCRM管理系统';
-    public $inputlist;
 
 	public function _initialize()
 	{
-		check();
-        $this->assign('menu', getLeftMenu());
-        $this->inputlist = config('inputlist');
-
-        $this->assign('inputlist',$this->inputlist);
+        //调用父类的构造函数
+        parent::_initialize();
 	}
 
 	/**

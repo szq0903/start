@@ -5,12 +5,12 @@
 <div class="mainpanel">
     {include file="Public/headerbar" /}
     <div class="pageheader">
-        <h2><i class="fa fa-table"></i> 模型管理 <a class="btn btn-danger" href="{:url('admin/moulds/add')}">添加模型</a></h2>
+        <h2><i class="fa fa-table"></i> {$mould.name}管理 <a class="btn btn-danger" href="{$url['add']}">添加{$mould.name}</a></h2>
         <div class="breadcrumb-wrapper">
             <span class="label">当前位置:</span>
             <ol class="breadcrumb">
-                <li><a href="/admin/moulds">模型管理</a></li>
-                <li class="active">模型管理</li>
+                <li><a href="{$url['index']}">{$mould.name}管理</a></li>
+                <li class="active">{$mould.name}管理</li>
             </ol>
         </div>
     </div>
@@ -24,14 +24,17 @@
                         <thead>
                         <tr>
                             <th>ID</th>
-                            <th>排序</th>
-                            <th>图标</th>
-                            <th>模型名称</th>
-                            <th>附加表名</th>
+                            {volist name="field" id="vo" mod="2"}
+                            {if $vo.islist ==0}
+                            <th>{$vo.itemname}</th>
+                            {/if}
+                            {/volist}
+                            <th>添加时间</th>
                             <th>操作</th>
                         </tr>
                         </thead>
                         <tbody>
+
                         {volist name="list" id="vo" mod="2"}
                         {eq name="mod" value="0"}
                         <tr class="gradeA odd">
@@ -39,14 +42,14 @@
                         <tr class="gradeA even">
                             {/eq}
                             <td>{$vo.id}</td>
-                            <td>{$vo.sort}</td>
-                            <td><span class="fa {$vo.icon}"></span> </td>
-                            <td>{$vo.name}</td>
-                            <td>{$vo.table}</td>
+                            {volist name="field" id="val" mod="2"}
+
+                            <td>{$vo[$val.fieldname]}</td>
+                            {/volist}
+                            <td>{:date('Y-m-d',$vo.update)}</td>
                             <td>
-                                <a class="fa fa-list-alt" href="{:url('admin/fields/index',['mid'=>$vo.id])}"></a>
-                                <a class="fa fa-edit" href="{:url('admin/moulds/edit',['id'=>$vo.id])}"></a>
-                                <a class="fa fa-trash-o" href="{:url('admin/moulds/del',['id'=>$vo.id])}"></a>
+                                <a class="fa fa-edit" href="{$vo.edit}"></a>
+                                <a class="fa fa-trash-o" href="{$vo.del}"></a>
                             </td>
                         </tr>
                         {/volist}

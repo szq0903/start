@@ -21,15 +21,6 @@ class Sysinfos extends Base
 	    //调用父类的构造函数
         parent::_initialize();
 
-	    /*
-		check();
-        $this->assign('menu', getLeftMenu());
-
-        $this->title = Config::get("project_name");
-
-        $this->inputlist = config('inputlist');
-        $this->assign('inputlist',$this->inputlist);
-	    */
 	}
 
 	/**
@@ -216,7 +207,6 @@ class Sysinfos extends Base
         {
             $this->error('要修改的模型不存在');
         }else{
-
             $sysinfo ->delete();
             $this->success('删除配置成功！');
         }

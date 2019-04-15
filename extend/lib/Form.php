@@ -182,7 +182,7 @@ class Form {
                 <script>
 	                $('#file-{$id}').fileinput({
                         language: 'zh',
-		                uploadUrl: '/categorys/addimg/f/up{$field['fieldname']}.html',
+		                uploadUrl: '/upload/index/addImg/f/up{$field['fieldname']}.html',
                         allowedFileExtensions : ['jpg', 'png','gif'],
 		                previewFileType:'any',
 		                dropZoneEnabled: false,

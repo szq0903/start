@@ -1,10 +1,9 @@
 <?php
-namespace app\index\controller;
-use think\Controller;
+namespace app\admin\controller;
 use think\Request;
 use think\Db;
 use think\Config;
-use app\index\model\Mould;
+use app\admin\model\Mould;
 
 /**
  * 模型管理
@@ -12,14 +11,13 @@ use app\index\model\Mould;
  * @email  6731834@163.com
  * @date 2017年6月16日 上午10:21:27
  */
-class Moulds extends Controller
+class Moulds extends Base
 {
-	public $title='SEOCRM管理系统';
 
 	public function _initialize()
 	{
-		check();
-        $this->assign('menu', getLeftMenu());
+        //调用父类的构造函数
+        parent::_initialize();
 	}
 
 	/**
@@ -134,7 +132,7 @@ class Moulds extends Controller
         }else{
             $this->droptable($mould->table);
             $mould ->delete();
-			$this->success('删除模型成功！','index/moulds/index');
+			$this->success('删除模型成功！','admin/moulds/index');
 		}
 		$this->assign('title','删除模型-'.$this->title);
 		$request = Request::instance();
@@ -156,11 +154,21 @@ class Moulds extends Controller
         $re = Db::execute($sql);
     }
 
+    /**
+     * 重命名表名
+     * @param $oldtable
+     * @param $newtable
+     */
     public function rename($oldtable,$newtable)
     {
         $sql='ALTER TABLE '.Config::get('database.prefix').$oldtable.' RENAME TO '.Config::get('database.prefix').$newtable.';';
         $re = Db::execute($sql);
     }
+
+    /**
+     * 删除表
+     * @param $table
+     */
     public function droptable($table)
     {
         $sql = 'DROP TABLE '.Config::get('database.prefix').$table;

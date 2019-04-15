@@ -11,7 +11,7 @@ use app\admin\model\Area;
  */
 class Areas extends Base
 {
-    public $modelName = 'Areas';
+
 	public function _initialize()
 	{
         //调用父类的构造函数
