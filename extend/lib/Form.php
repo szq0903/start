@@ -105,9 +105,9 @@ class Form {
 			{
 			    if($k == $key)
                 {
-                    $str.="<option value='$key' selected>$value</option>";
+                    $str.="<option value='$k' selected>$value</option>";
                 }else{
-                    $str.="<option value='$key'>$value</option>";
+                    $str.="<option value='$k'>$value</option>";
                 }
 
 			}
@@ -222,133 +222,16 @@ class Form {
 		$class=$class=='' ? $class : "class='$class'";
 		$id=$id=='' ? $id : "id='$id'";
 
+        $html = <<<aa
+        <script id="{$field['fieldname']}" name="{$field['fieldname']}" type="text/plain"></script>
+        <script type="text/javascript">
+            //实例化编辑器
+            //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
+            var ue = UE.getEditor('{$field['fieldname']}');
+        </script>
+aa;
 
-		$html = '<div class="zx-eidtor-container" id="editorContainer"></div>';
-        $html .= '<input type="hidden" name="'.$field['fieldname'].'" value=\''.$field['vdefault'].'\' class="zx-eidtor">';
-        $html .= '<a href="#" class="submit active" onclick="handleSubmitClick()">完成编辑</a>';
-        $html .= "<script>
-
-// 初始化ZX编辑器
-var zxEditor = new ZxEditor('#editorContainer', {
-            fixed: true,
-  // demo有顶部导航栏，高度44
-  //top: 44,
-  // 编辑框左右边距
-  //padding: 13,
-  ";
-        if(isset($field['islink']))
-        {
-            $html .= "
-  //是否显示底部工具栏（图片、标签、链接添加等图标）。
-  showToolbar: ['pic', 'emoji', 'text', 'link']
-})
-";
-        }else{
-            $html .= "
-  //是否显示底部工具栏（图片、标签、链接添加等图标）。
-  showToolbar: ['pic', 'emoji', 'text']
-})
-";
-        }
-        if(!empty($field['vdefault']))
-        {
-            $html .= "zxEditor.setContent('".str_replace(array("\r\n", "\r", "\n"), "", $field['vdefault'])."')";
-        }
-
-        $html .= "
-function handleSubmitClick () {
-    // 获取文章数据
-    var data = getArticleData() || {};
-  // 显示loading
-  zxEditor.dialog.loading();
-
-  // 上传图片数据
-  // 处理正文中的base64图片
-  // 获取正文中的base64数据数组
-  var base64Images = zxEditor.getBase64Images();
-  // 上传base64图片数据
-  uploadBase64Images(base64Images, function () {
-      // 正文中有base64数据，上传替换成功后再重新获取正文内容
-      if (base64Images.length) {
-          data.content = zxEditor.getContent();
-      }
-      // 需要提交的数据
-      // 防止提交失败，再保存一次base64图片上传后的文章数据
-      zxEditor.storage.set('article', data)
-    // 发送至服务器
-
-    // end
-    zxEditor.dialog.removeLoading();
-
-    $('.zx-eidtor').val(data.content)
-
-  })
-}
-
-
-//获取文章数据
-function getArticleData () {
-    var data = {
-        // 获取正文内容
-        content: zxEditor.getContent()
-  }
-  return (!data.content || data.content === '')
-      ? null
-      : data;
-}
-
-
-//数据处理，并提交数据处理
-
-function uploadBase64Images (base64Images, callback) {
-    var len = base64Images.length;
-    var count = 0;
-    if (len === 0) {
-        callback()
-    return
-  }
-    for (var i = 0; i < len; i++) {
-        _uploadHandler(base64Images[i]);
-    }
-  function _uploadHandler (data) {
-      upload(data.blob, function (url) {
-          // 替换正文中的base64图片
-          zxEditor.setImageSrc(data.id, url)
-      setTimeout(function () {}, 3000)
-      // 计算图片是否上传完成
-      _handleCount();
-    })
-  }
-  function _handleCount () {
-      count++
-    if (count === len) {
-        callback()
-    }
-  }
-}
-
-// 模拟文件上传
-function upload (blob, callback) {
-    var formData = new FormData();
-    formData.append('img', blob,blob.size+'.jpg');
-    $.ajax({
-    type : 'POST',
-    url : '/uploads/addimg/f/img.html',
-    data : formData,
-    async: false,
-    cache: false,
-    contentType: false,
-    processData: false,
-    success : function(msg) {
-        if(msg){
-            var obj = JSON.parse(msg);
-            console.log(obj.data)
-            callback(obj.data);
-        }
-    }
-  });
-}
-</script>";
+     
 		return $html;
 	}
 	/**

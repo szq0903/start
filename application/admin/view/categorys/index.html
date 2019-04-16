@@ -43,8 +43,9 @@
                             {/eq}
                             <td>{$vo.id}</td>
                             {volist name="field" id="val" mod="2"}
-
+                            {if $val.islist ==0}
                             <td>{$vo[$val.fieldname]}</td>
+                            {/if}
                             {/volist}
                             <td>{:date('Y-m-d',$vo.update)}</td>
                             <td>

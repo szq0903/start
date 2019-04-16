@@ -24,6 +24,7 @@ use lib\Form;
 class BaseMould extends Base
 {
 
+    //模型实型
     public $mould;
     public $field;
 
@@ -54,7 +55,13 @@ class BaseMould extends Base
 
     public function index()
     {
-        $list = $this->m->order('update','desc')->paginate(10);;
+        if(empty($this->list))
+        {
+            $list = $this->m->order('update','desc')->select();
+        }else{
+            $list = $this->list;
+        }
+
 
         foreach ($list as $key=>$val)
         {
@@ -70,6 +77,15 @@ class BaseMould extends Base
 
     public function add()
     {
+        if (Request::instance()->isPost())
+        {
+            foreach ($this->field as $val) {
+                $this->m[$val['fieldname']] = Request::instance()->post($val['fieldname']);
+            }
+            $this->m['update'] = time();
+            $this->m->save();
+            $this->success('添加成功！');
+        }
         //处理字段显示
         $form = new Form();
         $formhtml = array();
