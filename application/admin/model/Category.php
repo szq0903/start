@@ -32,5 +32,18 @@ class Category extends Model
         }
     }
 
+    /*
+     *
+     * */
+    public function getSelectArray($array)
+    {
+        $carr = array(0=>'顶级栏目');
+        foreach ($array as $value)
+        {
+            $carr[$value['id']] = $value['name'];
+        }
+        return $carr;
+    }
+
 }
 ?>

@@ -79,9 +79,9 @@ function msubstr($str, $start=0, $length, $charset="utf-8", $suffix=true)
  return $slice;
 }
 
+
 function time_tran($the_time){
 	//$now_time = date("Y-m-d H:i:s",time()+8*60*60);
-
    	//$now_time = strtotime($now_time);
 	$now_time = time();
    	$show_time = $the_time;
@@ -100,6 +100,7 @@ function time_tran($the_time){
         return date('n月j日',$the_time);
     }
 }
+
 
 function makeradio($arr,$name, $class ,$value = -1)
 {
@@ -129,6 +130,8 @@ function makeradio($arr,$name, $class ,$value = -1)
     }
     return $html;
 }
+
+
 
 //初始化类目文章列表
 function getCateArtList($cateart)

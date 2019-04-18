@@ -88,7 +88,7 @@ class Form {
 	 * @param string $id
 	 * @return string
 	 */
-	public  function select ($field,$class='',$id='',$key=''){
+	public  function select ($field,$class='',$id=''){
 		$class=$class=='' ? $class : "class='$class'";
 		$id=$id=='' ? $id : "id='$id'";
 		$str="<select name='{$field['fieldname']}'  {$class}  {$id}>";
@@ -98,12 +98,11 @@ class Form {
         }else{
             $arrs=explode(',', $field['vdefault']);
         }
-
 		if(is_array($arrs))
 		{
 			foreach ($arrs as $k=>$value)
 			{
-			    if($k == $key)
+			    if(isset($field['val']) && $k == $field['val'])
                 {
                     $str.="<option value='$k' selected>$value</option>";
                 }else{
@@ -132,7 +131,20 @@ class Form {
 		{
 			foreach($arrs as $key=>$value)
 			{
-				$str.="<input  type='radio' name='{$field['fieldname']}'  value='{$key}' {$class}  {$id} />{$value}";
+			    if(isset($field['val']) && $key == $field['val'])
+                {
+                    $checked = 'checked';
+                }else{
+                    $checked = '';
+                }
+
+			    $str.=<<<eoc
+			    
+			    <div class="rdio rdio-success col-sm-3">
+                    <input type="radio" name="{$field['fieldname']}" value="{$key}" id="radio{$key}" {$checked}>
+                    <label for="radio{$key}">{$value}</label>
+                </div>
+eoc;
 			}
 		}
 		return $str;
@@ -222,16 +234,24 @@ class Form {
 		$class=$class=='' ? $class : "class='$class'";
 		$id=$id=='' ? $id : "id='$id'";
 
+        $field['vdefault'] = addslashes($field['vdefault']);
+
         $html = <<<aa
         <script id="{$field['fieldname']}" name="{$field['fieldname']}" type="text/plain"></script>
         <script type="text/javascript">
             //实例化编辑器
             //建议使用工厂方法getEditor创建和引用编辑器实例，如果在某个闭包下引用该编辑器，直接调用UE.getEditor('editor')就能拿到相关的实例
             var ue = UE.getEditor('{$field['fieldname']}');
+            
+            ue.ready(function() {
+               
+                ue.setContent('{$field['vdefault']}');
+                //ue.setContent('<p><img src="\\public\\uploads\\images\\20190416\\51a8877f736e903647d57915f735ffe4.jpeg"  alt="20190416\51a8877f736e903647d57915f735ffe4.jpeg" title="11.jpeg" width="426" height="374"/>1111111111</p>');
+            });
+            
         </script>
 aa;
 
-     
 		return $html;
 	}
 	/**

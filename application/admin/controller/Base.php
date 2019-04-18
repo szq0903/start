@@ -24,6 +24,7 @@ class Base extends Controller
         $this->title = config("project_name");
         $this->inputlist = config('inputlist');
         $this->assign('inputlist',$this->inputlist);
+
     }
 
     public function _empty()

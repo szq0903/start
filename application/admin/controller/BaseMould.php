@@ -109,14 +109,69 @@ class BaseMould extends Base
 
     public function edit($id)
     {
+
+
+        $temp = $this->m->where('id', $id)->find();
+        //判断地区是否存在
+        if(empty($temp))
+        {
+            $this->error('要修改的'.$this->mould['name'].'不存在');
+        }
+
+        if (Request::instance()->isPost())
+        {
+            foreach ($this->field as $val) {
+                $temp[$val['fieldname']] = Request::instance()->post($val['fieldname']);
+            }
+            $temp['update'] = time();
+            $temp->save();
+            $this->success('添加成功！');
+        }
+
+
+        //处理字段显示
+        $form = new Form();
+        $formhtml = array();
+        foreach ($this->field as $val)
+        {
+            if($val['ishide'] ==1)//隐藏时跳过本次
+            {
+                continue;
+            }
+
+            //判断数据是不是外部加入的
+            if(empty($val['isAdd']))
+            {
+                $val['vdefault'] = $temp[$val['fieldname']];
+            }else{
+                $val['val'] = $temp[$val['fieldname']];
+            }
+
+
+            $arr['html'] = $form->fieldToForm($val,'form-control',$val['fieldname']);
+            $arr['fieldname'] = $val['fieldname'];
+            $arr['itemname'] = $val['itemname'];
+
+            $formhtml[] = $arr;
+        }
+
+        $this->assign('formhtml',$formhtml);
+
         $this->assign('title','修改'.$this->mould->name.'-'.$this->title);
         return $this->fetch('');
     }
 
     public function del($id)
     {
-        $this->assign('title','删除'.$this->mould->name.'-'.$this->title);
-        return $this->fetch('');
+        $temp = $this->m->where('id', $id)->find();
+        if(empty($temp))
+        {
+            $this->error('您要删除的'.$this->mould['name'].'不存在！');
+        }else{
+            $temp ->delete();
+            $this->success('删除'.$this->mould['name'].'成功！');
+        }
+
     }
 
 }

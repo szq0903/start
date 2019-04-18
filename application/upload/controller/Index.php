@@ -193,7 +193,6 @@ class Index extends Controller
             $stateInfo = $this->stateMap['ERROR_FILE_NOT_FOUND'];
             return;
         }
-
         if ($file->getInfo()['error'] <> 0) {
             $stateInfo = $this->stateMap[$file['error']];
             return;
