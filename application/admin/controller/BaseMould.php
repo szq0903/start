@@ -27,6 +27,9 @@ class BaseMould extends Base
     //模型实型
     public $mould;
     public $field;
+    public $site = 10; //每页显示数量
+    public $isPage = true; //默认是分页
+    public $list; //数据列表
 
     public function _initialize()
     {
@@ -57,11 +60,10 @@ class BaseMould extends Base
     {
         if(empty($this->list))
         {
-            $list = $this->m->order('update','desc')->select();
+            $list = $this->m->order('update','desc')->paginate($this->site);;
         }else{
             $list = $this->list;
         }
-
 
         foreach ($list as $key=>$val)
         {
@@ -70,6 +72,8 @@ class BaseMould extends Base
         }
 
         $this->assign('list',$list);
+        $this->assign('isPage',$this->isPage);
+
 
         $this->assign('title','管理'.$this->mould['name'].'-'.$this->title);
         return $this->fetch('');

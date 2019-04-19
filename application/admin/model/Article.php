@@ -18,4 +18,26 @@ class Article extends Model
         parent::initialize();
         //TODO:自定义的初始化
     }
+
+    public function getCidAttr($value)
+    {
+        $arr = Category::get(['id'=>$value]);
+        if(empty($value))
+        {
+            return ;
+        }else{
+            return $arr['name'];
+        }
+    }
+
+    public function getRecommendAttr($value)
+    {
+        $arr = array('正常','推荐','置顶','头条');
+        if(empty($value))
+        {
+            return '正常';
+        }else{
+            return $arr[$value];
+        }
+    }
 }

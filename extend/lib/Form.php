@@ -129,10 +129,19 @@ class Form {
 		$arrs=explode(',', $field['vdefault']);
 		if(is_array($arrs))
 		{
+		    $i=1;
 			foreach($arrs as $key=>$value)
 			{
-			    if(isset($field['val']) && $key == $field['val'])
+			    if(!isset($field['val']) )
                 {
+                    if($i == 1)
+                    {
+                        $checked = 'checked';
+                    }else{
+                        $checked = '';
+                    }
+
+                }elseif($key == $field['val']){
                     $checked = 'checked';
                 }else{
                     $checked = '';
@@ -142,9 +151,10 @@ class Form {
 			    
 			    <div class="rdio rdio-success col-sm-3">
                     <input type="radio" name="{$field['fieldname']}" value="{$key}" id="radio{$key}" {$checked}>
-                    <label for="radio{$key}">{$value}</label>
+                    <label for="radio{$key}">({$key}){$value}</label>
                 </div>
 eoc;
+                $i++;
 			}
 		}
 		return $str;

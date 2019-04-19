@@ -59,7 +59,7 @@ class Index extends Controller
             $re =array(
                 'code'=> 0,
                 'message'=> '上传成功',
-                'data'=>DS ."public" . DS . 'uploads'. DS .'images' . DS .$info->getSaveName()
+                'data'=>'/public/uploads/images/' . $info->getSaveName()
             );
             echo json_encode($re);
         }else{
@@ -230,7 +230,7 @@ class Index extends Controller
         if($info){
             $data = array(
                 "state" => 'SUCCESS',
-                "url" => DS ."public" . DS . 'uploads'. DS .$config['type'] . DS .$info->getSaveName(),
+                "url" => "/public/uploads/" .$config['type'] .'/'. DS .$info->getSaveName(),
                 "title" => $file->getInfo()['name'],
                 "original" => $info->getSaveName(),
                 "type" => $file->getInfo()['type'],
@@ -284,7 +284,8 @@ class Index extends Controller
         $end = $start + $size;
 
         /* 获取文件列表 */
-        $path = $_SERVER['DOCUMENT_ROOT'] . DS ."public" . DS . 'uploads'. DS .$type . DS;
+        $path = $_SERVER['DOCUMENT_ROOT'] . "/public" . '/uploads/' .$type . '/';
+
         $files = $this->getfiles($path, $allowFiles);
         if (!count($files)) {
             return json_encode(array(
@@ -300,6 +301,7 @@ class Index extends Controller
         for ($i = min($end, $len) - 1, $list = array(); $i < $len && $i >= 0 && $i >= $start; $i--){
             $list[] = $files[$i];
         }
+
 //倒序
 //for ($i = $end, $list = array(); $i < $len && $i < $end; $i++){
 //    $list[] = $files[$i];
@@ -327,12 +329,14 @@ class Index extends Controller
         if (!is_dir($path)) return null;
         if(substr($path, strlen($path) - 1) != '/') $path .= '/';
         $handle = opendir($path);
+
         while (false !== ($file = readdir($handle))) {
             if ($file != '.' && $file != '..') {
                 $path2 = $path . $file;
                 if (is_dir($path2)) {
                     $this->getfiles($path2, $allowFiles, $files);
                 } else {
+
                     if (preg_match("/\.(".$allowFiles.")$/i", $file)) {
                         $files[] = array(
                             'url'=> substr($path2, strlen($_SERVER['DOCUMENT_ROOT'])),

@@ -42,6 +42,7 @@
                         <tr class="gradeA even">
                             {/eq}
                             <td>{$vo.id}</td>
+
                             {volist name="field" id="val" mod="2"}
                             {if $val.islist ==0}
                             <td>{$vo[$val.fieldname]}</td>
@@ -49,14 +50,17 @@
                             {/volist}
                             <td>{:date('Y-m-d',$vo.update)}</td>
                             <td>
+                                <a class="fa fa-list-ul" href="{$vo.list}"></a>
                                 <a class="fa fa-edit" href="{$vo.edit}"></a>
                                 <a class="fa fa-trash-o" href="{$vo.del}"></a>
                             </td>
                         </tr>
                         {/volist}
-
                         </tbody>
                     </table>
+                    {if $isPage}
+                    {$list->render()}
+                    {/if}
                 </div><!-- table-responsive -->
             </div>
             <!-- col-md-12 -->
