@@ -40,7 +40,7 @@ class Articles extends BaseMould
         $mv =array();
         $category = new Category;
         $category->getTree(0, $mv);
-        $carr = $category->getSelectArray($mv);
+        $carr = $category->getSelectArray($mv,array(0=>'顶级栏目'));
 
         foreach ($this->field as $k=>$val) {
             if($val['fieldname'] == 'cid')
@@ -59,7 +59,7 @@ class Articles extends BaseMould
         $mv =array();
         $category = new Category;
         $category->getTree(0, $mv);
-        $carr = $category->getSelectArray($mv);
+        $carr = $category->getSelectArray($mv,array(0=>'顶级栏目'));
 
         foreach ($this->field as $k=>$val) {
             if($val['fieldname'] == 'cid')

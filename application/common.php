@@ -29,7 +29,7 @@ function check()
 //获取左侧菜单
 function getLeftMenu()
 {
-    $mould = Mould::where('sort','>', 0)->select();
+    $mould = Mould::where('sort','>', 0)->where('ishide', 0)->select();
     return $mould;
 }
 

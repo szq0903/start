@@ -1,8 +1,7 @@
 <?php
 namespace app\admin\model;
-use think\Model;
 
-class Category extends Model
+class Category extends Basemodel
 {
 
 	//自定义初始化
@@ -32,18 +31,6 @@ class Category extends Model
         }
     }
 
-    /*
-     *
-     * */
-    public function getSelectArray($array)
-    {
-        $carr = array(0=>'顶级栏目');
-        foreach ($array as $value)
-        {
-            $carr[$value['id']] = $value['name'];
-        }
-        return $carr;
-    }
 
 }
 ?>

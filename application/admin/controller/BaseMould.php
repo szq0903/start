@@ -9,7 +9,6 @@
 namespace app\admin\controller;
 
 use think\Request;
-use app\admin\model\Sysinfo;
 use app\admin\model\Mould;
 use app\admin\model\Field;
 use lib\Form;
@@ -30,6 +29,7 @@ class BaseMould extends Base
     public $site = 10; //每页显示数量
     public $isPage = true; //默认是分页
     public $list; //数据列表
+    public $order = array('update'=>'desc'); //默认排序方式
 
     public function _initialize()
     {
@@ -60,7 +60,7 @@ class BaseMould extends Base
     {
         if(empty($this->list))
         {
-            $list = $this->m->order('update','desc')->paginate($this->site);;
+            $list = $this->m->order($this->order)->paginate($this->site);;
         }else{
             $list = $this->list;
         }
@@ -148,9 +148,9 @@ class BaseMould extends Base
             {
                 $val['vdefault'] = $temp[$val['fieldname']];
             }else{
-                $val['val'] = $temp[$val['fieldname']];
-            }
 
+                $val['val'] = $temp->getData($val['fieldname']);
+            }
 
             $arr['html'] = $form->fieldToForm($val,'form-control',$val['fieldname']);
             $arr['fieldname'] = $val['fieldname'];
@@ -158,6 +158,8 @@ class BaseMould extends Base
 
             $formhtml[] = $arr;
         }
+
+
 
         $this->assign('formhtml',$formhtml);
 

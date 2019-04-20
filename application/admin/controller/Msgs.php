@@ -26,6 +26,4 @@ class Msgs extends BaseMould
         $this->m = new Msg;
     }
 
-
-
 }

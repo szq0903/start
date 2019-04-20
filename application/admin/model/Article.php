@@ -6,9 +6,8 @@
  * Time: 11:22
  */
 namespace app\admin\model;
-use think\Model;
 
-class Article extends Model
+class Article extends Basemodel
 {
 
     //自定义初始化

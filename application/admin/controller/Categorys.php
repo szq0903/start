@@ -46,7 +46,7 @@ class Categorys extends BaseMould
         //准备上级栏目下拉内容
         $mv =array();
         $this->m->getTree(0, $mv);
-        $carr = $this->m->getSelectArray($mv);
+        $carr = $this->m->getSelectArray($mv,array(0=>'顶级栏目'));
 
         foreach ($this->field as $k=>$val) {
             if($val['fieldname'] == 'pid')
@@ -64,7 +64,7 @@ class Categorys extends BaseMould
         //准备上级栏目下拉内容
         $mv =array();
         $this->m->getTree(0, $mv);
-        $carr = $this->m->getSelectArray($mv);
+        $carr = $this->m->getSelectArray($mv,array(0=>'顶级栏目'));
 
         foreach ($this->field as $k=>$val) {
             if($val['fieldname'] == 'pid')
