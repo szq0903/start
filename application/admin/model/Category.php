@@ -31,6 +31,17 @@ class Category extends Basemodel
         }
     }
 
+    public function getRecommendAttr($value)
+    {
+        $arr = array('单页','新闻','产品');
+        if(empty($value))
+        {
+            return '单页';
+        }else{
+            return $arr[$value];
+        }
+    }
+
 
 }
 ?>
