@@ -125,6 +125,15 @@ class BaseMould extends Base
         if (Request::instance()->isPost())
         {
             foreach ($this->field as $val) {
+
+                if($val['ishide'] ==1)//隐藏时跳过本次
+                {
+                    continue;
+                }
+                if(isset($val['read']))
+                {
+                    continue;
+                }
                 $temp[$val['fieldname']] = Request::instance()->post($val['fieldname']);
             }
             $temp['update'] = time();
@@ -148,7 +157,6 @@ class BaseMould extends Base
             {
                 $val['vdefault'] = $temp[$val['fieldname']];
             }else{
-
                 $val['val'] = $temp->getData($val['fieldname']);
             }
 

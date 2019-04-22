@@ -315,11 +315,6 @@ return [
             'name'=>'checkbox多选框',
             'field'=>'tinyint',
             'length'=>5
-        ),
-        'checkbox1'=>array(
-            'name'=>'checkbox多选框1111',
-            'field'=>'tinyint',
-            'length'=>5
         )
     ]
 

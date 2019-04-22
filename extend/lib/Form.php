@@ -63,7 +63,9 @@ class Form {
 	public function text($field,$class='',$id='',$key=''){
 		$class=$class=='' ? $class : "class='$class'";
 		$id=$id=='' ? $id : "id='$id'";
-		$str="<input name='{$field['fieldname']}' placeholder='{$field['itemname']}' type='text' value='{$field['vdefault']}'  {$class}  {$id} />";
+
+		$read = isset($field['read']) ? 'readonly':'';
+		$str="<input name='{$field['fieldname']}' placeholder='{$field['itemname']}' $read type='text' value='{$field['vdefault']}'  {$class}  {$id} />";
 		return $str;
 	}
 
