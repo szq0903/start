@@ -17,4 +17,15 @@ class Orderitem extends Basemodel
         parent::initialize();
         //TODO:自定义的初始化
     }
+
+    public function getPidAttr($value)
+    {
+        $arr = Article::get(['id'=>$value]);
+        if(empty($value))
+        {
+            return '';
+        }else{
+            return $arr['title'];
+        }
+    }
 }

@@ -190,9 +190,7 @@ class Members extends BaseMould
                 $oitem->update = time();
                 $oitem->save();
             }
-
             $this->success('添加成功！','/admin/members/index');
-
         }
 
         //初始化订单
