@@ -31,7 +31,44 @@ class Category extends Basemodel
         }
     }
 
-    public function getRecommendAttr($value)
+    //递归获取所有的子分类的ID
+    public function getAllChild($array,$id){
+        $arr = array();
+        foreach($array as $v){
+            if($v['pid'] == $id){
+                $arr[] = $v['id'];
+                $arr = array_merge($arr,$this->getAllChild($array,$v['id']));
+            };
+        };
+        return $arr;
+    }
+
+
+    //递归获取所有的子分类的ID
+    public function getProTree($pid, &$sort ,$str ='')
+    {
+        $list = parent::where('pid','=',$pid)->where('type', 2)->order('order')->select();
+
+        if(!empty($list))
+        {
+            foreach($list as $k=>$v)
+            {
+                if($str <> '')
+                {
+                    $v['name']=$str.'├─'.$v['name'];
+                }
+                $sort[] = $v;
+                $this->getProTree($v->id,$sort,$str.'&nbsp;&nbsp;&nbsp;');
+            }
+        }
+    }
+
+
+
+
+
+
+    public function getTypeAttr($value)
     {
         $arr = array('单页','新闻','产品');
         if(empty($value))

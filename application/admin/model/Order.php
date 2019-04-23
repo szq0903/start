@@ -18,4 +18,14 @@ class Order extends Basemodel
         //TODO:自定义的初始化
     }
 
+    public function getMidAttr($value)
+    {
+        $arr = Member::get(['id'=>$value]);
+        if(empty($value))
+        {
+            return '顶级会员';
+        }else{
+            return $arr['name'];
+        }
+    }
 }

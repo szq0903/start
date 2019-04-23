@@ -13,6 +13,11 @@ use app\admin\model\Level;
 use app\admin\model\Card;
 use app\admin\model\Mould;
 use app\admin\model\Field;
+use app\admin\model\Order;
+use app\admin\model\Orderitem;
+use app\admin\model\Category;
+use app\admin\model\Article;
+
 use lib\Form;
 
 class Members extends BaseMould
@@ -153,4 +158,80 @@ class Members extends BaseMould
         $this->assign('title','编辑会员名片-'.$this->title);
         return view('');
     }
+
+    //添加订单
+    public function order($mid=0)
+    {
+        $m=$this->m->where('id', $mid)->find();
+
+
+        if (Request::instance()->isPost())
+        {
+            $or = new Order;
+            $or->ordernum = Request::instance()->post('ordernum');
+            $or->mid = $mid;
+            $or->update = time();
+            $or->save();
+
+            $pids =  Request::instance()->post('pid/a');
+            $specss =  Request::instance()->post('specs/a');
+            $units =  Request::instance()->post('unit/a');
+            $nums =  Request::instance()->post('num/a');
+
+
+            foreach ($pids as $k=>$v)
+            {
+                $oitem = new Orderitem;
+                $oitem->oid = $or->id;
+                $oitem->pid = $pids[$k];
+                $oitem->specs = $specss[$k];
+                $oitem->unit = $units[$k];
+                $oitem->num = $nums[$k];
+                $oitem->update = time();
+                $oitem->save();
+            }
+
+            $this->success('添加成功！','/admin/members/index');
+
+        }
+
+        //初始化订单
+        $temp['ordernum'] = makeorder();
+        $temp['mid'] = $m['name'];
+        $this->assign('temp',$temp);
+        $this->assign('mid',$mid);
+
+        //准备产品分类
+        $catearr = array();
+        $cate = new Category;
+        $cate->getProTree(0, $catearr);
+        $catearr = $cate->getSelectArray($catearr);
+        $this->assign('catearr',$catearr);
+
+
+        $this->assign('title','添加订单-'.$this->title);
+        return view('');
+    }
+
+    public function getArtlistjax($cid=0)
+    {
+        $cate = new Category;
+        $catearr = Category::all();
+        $ids = $cate->getAllChild($catearr,$cid);
+        $ids = empty($ids) ? $cid:$cid.','.implode(',',$ids);
+
+        $art = new Article;
+        $list = $art->whereIn('cid', $ids)->order('update','desc')->select();
+
+        $data = array();
+        foreach ($list as $key=>$val)
+        {
+            $data[$key]['id'] = $val['id'];
+            $data[$key]['title'] = $val['title'];
+            $data[$key]['specs'] = $val['specs'];
+            $data[$key]['unit'] = $val['unit'];
+        }
+        return json_encode($data);
+    }
+
 }

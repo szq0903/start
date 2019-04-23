@@ -71,8 +71,8 @@
                             {/volist}
                             <td>{:date('Y-m-d',$vo.update)}</td>
                             <td>
-
-                                <a class="fa fa-credit-card" title="开通" href="{:url('admin/members/card',['mid'=>$vo.id])}" data-toggle="modal" data-target=".bs-example-modal-photo"></a>
+                                <a class="fa fa-shopping-cart" title="添加订单" href="{:url('admin/members/order',['mid'=>$vo.id])}" data-toggle="modal" data-target=".bs-example-modal-photo"></a>
+                                <a class="fa fa-credit-card" title="名片" href="{:url('admin/members/card',['mid'=>$vo.id])}" data-toggle="modal" data-target=".bs-example-modal-photo"></a>
                                 <a class="fa fa-edit" href="{$vo.edit}"></a>
                                 <a class="fa fa-trash-o" href="{$vo.del}"></a>
                             </td>
@@ -106,3 +106,13 @@
 
 
 {include file="Public/footer_base" /}
+
+<script>
+    jQuery(document).ready(function(){
+
+        $("#myModal").on("hidden.bs.modal", function() {
+            $(this).removeData("bs.modal");
+        });
+
+    });
+</script>

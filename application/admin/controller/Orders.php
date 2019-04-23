@@ -8,7 +8,7 @@
 
 namespace app\admin\controller;
 
-use app\admin\model\Cart;
+use app\admin\model\Order;
 
 class Orders extends BaseMould
 {
@@ -23,8 +23,10 @@ class Orders extends BaseMould
     {
         //调用父类的构造函数
         parent::_initialize();
-        $this->m = new Cart;
+        $this->m = new Order;
     }
+
+
 
     public function edit($id)
     {
