@@ -77,6 +77,7 @@ class Orders extends BaseMould
         }
 
         //初始化订单
+        $temp['id'] = $m['id'];
         $temp['ordernum'] = $m['ordernum'];
         $temp['mid'] = $m['mid'];
         $this->assign('temp',$temp);
@@ -98,4 +99,27 @@ class Orders extends BaseMould
         return view('');
     }
 
+    public function additem()
+    {
+        if (Request::instance()->isPost())
+        {
+            $pid =  Request::instance()->post('pid');
+            $specs =  Request::instance()->post('specs');
+            $unit =  Request::instance()->post('unit');
+            $num =  Request::instance()->post('num');
+            $oid =  Request::instance()->post('oid');
+
+            $oitem = new Orderitem;
+            $oitem->oid = $oid;
+            $oitem->pid = $pid;
+            $oitem->specs = $specs;
+            $oitem->unit = $unit;
+            $oitem->num = $num;
+            $oitem->update = time();
+            $oitem->save();
+
+            return json_encode(array('id'=>$oitem['id'], 'pid'=>$oitem->pid, 'title'=>$oitem->pid, 'specs'=> $oitem->specs, 'unit'=>$oitem->unit, 'num'=>$oitem->num, 'oid'=>$oitem->oid));
+
+        }
+    }
 }

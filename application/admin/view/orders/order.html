@@ -9,7 +9,7 @@
                 <div class="form-group">
                     <label class="col-sm-3 control-label">订单号：</label>
                     <div class="col-sm-6">
-                        <input name="ordernum" placeholder="订单号" type="text" value="{$temp['ordernum']}" readonly class="form-control" id="ordernum">
+                        <input name="ordernum" placeholder="订单号" type="text" value="{$temp['ordernum']}" readonly class="form-control" data-id="{$temp['id']}" id="ordernum">
                     </div>
                 </div>
 
@@ -33,7 +33,7 @@
                                         <td>{$vo.specs}</td>
                                         <td>{$vo.unit}</td>
                                         <td>{$vo.num}</td>
-                                        <td><a class="fa fa-trash-o del"></a></td>
+                                        <td><a class="fa fa-trash-o del" data-id="{$vo.id}"></a></td>
                                     </tr>
                                 {/volist}
 
@@ -126,29 +126,38 @@ $(document).ready(function(){
     //list
     $("#add").click(function (){
 
-        var id = $('#pid').find("option:selected").attr("data-id");
-        var title = $('#pid').find("option:selected").attr("data-title");
+        var pid = $('#pid').find("option:selected").attr("data-id");
         var specs = $('#pid').find("option:selected").attr("data-specs");
         var unit = $('#pid').find("option:selected").attr("data-unit");
         var num = $("#num").val();
+        var oid = $("#ordernum").data('id');
 
-        html = '<tr>\n' +
-            '<input name="pid['+id+']"  type="hidden" value="'+id+'">\n' +
-            '<input name="specs['+id+']"  type="hidden" value="'+specs+'">\n' +
-            '<input name="unit['+id+']"  type="hidden" value="'+unit+'">\n' +
-            '<input name="num['+id+']"  type="hidden" value="'+num+'">\n' +
-            '                                        <td>'+title+'</td>\n' +
-            '                                        <td>'+specs+'</td>\n' +
-            '                                        <td>'+unit+'</td>\n' +
-            '                                        <td>'+num+'</td>\n' +
-            '                                        <td><a class="fa fa-trash-o del"></a> </td>\n' +
-            '                                    </tr>';
-        $("#list").append(html)
+        var id ;
+        $.post("/admin/orders/additem", { pid: pid, specs: specs, unit: unit, num: num, oid: oid} ,function(result){
+            re = JSON.parse(result)
+
+            html = '<tr>\n' +
+                '<input name="pid['+re.id+']"  type="hidden" value="'+re.pid+'">\n' +
+                '<input name="specs['+re.id+']"  type="hidden" value="'+re.specs+'">\n' +
+                '<input name="unit['+re.id+']"  type="hidden" value="'+re.unit+'">\n' +
+                '<input name="num['+re.id+']"  type="hidden" value="'+re.num+'">\n' +
+                '                                        <td>'+re.title+'</td>\n' +
+                '                                        <td>'+re.specs+'</td>\n' +
+                '                                        <td>'+re.unit+'</td>\n' +
+                '                                        <td>'+re.num+'</td>\n' +
+                '                                        <td><a class="fa fa-trash-o del" data-id="'+re.id+'"></a> </td>\n' +
+                '                                    </tr>';
+            $("#list").append(html)
+
+        });
+
         //console.log('添加数量'+id +' '+ title + ' '+ specs + ' ' + unit + '' + num);
     });
 
     //删除元素
     $("#list").on('click', '.del', function () {
+        var id = $(this).data('id');
+        console.log(id);
         $(this).parent().parent().remove();
     })
 
