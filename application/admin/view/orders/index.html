@@ -49,7 +49,8 @@
                             {/volist}
                             <td>{:date('Y-m-d',$vo.update)}</td>
                             <td>
-                                <a class="fa fa-edit" href="{$vo.edit}"></a>
+                                <a class="fa fa-list-alt" href="{:url('admin/fields/index',['mid'=>$vo.id])}"></a>
+                                <a style="display: none" class="fa fa-edit" href="{$vo.edit}"></a>
                                 <a class="fa fa-trash-o" href="{$vo.del}"></a>
                             </td>
                         </tr>
