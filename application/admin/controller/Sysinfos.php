@@ -57,7 +57,7 @@ class Sysinfos extends Base
                 continue;
             }
             $val['vdefault'] = $val['val'];
-            $arr['html'] = $form->fieldToForm($val,'form-control');
+            $arr['html'] = $form->fieldToForm($val,'form-control',$val['fieldname']);
             $arr['itemname'] = $val['itemname'];
 
             $formhtml[] = $arr;

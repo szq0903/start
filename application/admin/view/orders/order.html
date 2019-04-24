@@ -157,7 +157,14 @@ $(document).ready(function(){
     //删除元素
     $("#list").on('click', '.del', function () {
         var id = $(this).data('id');
-        console.log(id);
+        $.get('/admin/orders/delitem/id/' + id, function(result){
+            re = JSON.parse(result)
+            if(re.status == 1)
+            {
+
+            }
+        });
+
         $(this).parent().parent().remove();
     })
 

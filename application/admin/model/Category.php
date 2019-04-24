@@ -38,7 +38,7 @@ class Category extends Basemodel
             if($v['pid'] == $id){
                 $arr[] = $v['id'];
                 $arr = array_merge($arr,$this->getAllChild($array,$v['id']));
-            };
+            }
         };
         return $arr;
     }

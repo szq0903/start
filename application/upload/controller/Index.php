@@ -47,7 +47,7 @@ class Index extends Controller
         if(!isset($file))
         {
             // 上传失败获取错误信息
-            echo "{\"code\":-1, \"error\":\"Invalid file format\"}";
+            echo "{\"code\":-1, \"error\":\"没有找到图片\"}";
             exit;
         }
 

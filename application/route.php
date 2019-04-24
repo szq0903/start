@@ -14,7 +14,6 @@ return [
         'name' => '\w+',
     ],
 	'__alias__' =>  [
-        'index'  		=>  'index/index',
 		'account'  		=>  'index/account',
 		'areas'			=>	'index/areas',
 		'magents' 		=>  'index/magents',

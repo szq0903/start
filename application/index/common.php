@@ -6,8 +6,5 @@
  * Time: 23:11
  */
 
-use app\index\model\Sysinfo;
-use app\index\model\MoneyLog;
-use app\index\model\Member;
 
 

@@ -122,4 +122,14 @@ class Orders extends BaseMould
 
         }
     }
+
+    public function delitem($id)
+    {
+        $oitem = Orderitem::get($id);
+        $oitem ->delete();
+        $re = array(
+            'status'=>1,
+        );
+        return json_encode($re);
+    }
 }
