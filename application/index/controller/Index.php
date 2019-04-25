@@ -128,8 +128,10 @@ class Index extends Base
                     $data[$k]['id'] = $val['id'];
                     $data[$k]['title'] = $val['title'];
                     $data[$k]['thumb'] = empty($val['thumb']) ? '/theme/images/nopic.jpg':$val['thumb'];
+                    $data[$k]['thumb'] = $this->http.$data[$k]['thumb'];
                     $data[$k]['cid'] = $val['cid'];
                     $data[$k]['update'] = date("Y-m-d H:i:s", $val['update']);
+                    $data[$k]['info'] = htmltotext($val['body'],200);
                 }
                 $re = array(
                     'status'=>1,
@@ -151,6 +153,55 @@ class Index extends Base
 
     }
 
+    /**文章详情页
+     * @param int $id
+     */
+    public function artItem($id=0)
+    {
+        try
+        {
+            $art  = Article::get($id);
+
+            if(empty($art))
+            {
+                $re = array(
+                    'status'=>0,
+                    'data'=>'数据为空'
+                );
+            }else{
+                $data = array();
+                $data['id'] = $art['id'];
+                $data['title'] = $art['title'];
+                $data['thumb'] = empty($art['thumb']) ? '/theme/images/nopic.jpg':$art['thumb'];
+                $data['thumb'] = $this->http.$data['thumb'];
+                $data['cid'] = $art['cid'];
+                $data['update'] = date("Y-m-d H:i:s", $art['update']);
+                $data['info'] = htmltotext($art['body'],200);
+                $data['body'] = $art['body'];
+                $data['click'] = $art['click'];
+                $data['keywords'] = $art['keywords'];
+                $data['description'] = $art['description'];
+                $data['author'] = $art['author'];
+                $data['specs'] = $art['specs'];
+                $data['unit'] = $art['unit'];
+                $data['cid'] = $art['cid'];
+
+                $re = array(
+                    'status'=>1,
+                    'data'=>$data
+                );
+            }
+        } //捕获异常
+        catch(Exception $e)
+        {
+            $re = array(
+                'status'=>-1,
+                'msg'=>$e->getMessage()
+            );
+        }
+        return json_encode($re);
+
+    }
 
 
 }
