@@ -197,9 +197,10 @@ eoc;
             $header_array = get_headers($field['vdefault'], true);
             $imagesize = $header_array['Content-Length'];
         }else{
+            $field['vdefault'] = str_replace('\\','/',$field['vdefault']);
             $imagesize =filesize(getcwd().$field['vdefault']);
         }
-        $field['vdefault'] = str_replace('\\','/',$field['vdefault']);
+
 
 		$html = "<input id='{$id}' name='{$field['fieldname']}' value='{$field['vdefault']}' type='hidden'>
                 <input id='file-{$id}' name='up{$id}' value='{$field['vdefault']}' type='file' data-min-file-count='1'>

@@ -31,6 +31,31 @@ class Category extends Basemodel
         }
     }
 
+    /**获取平级的栏目
+     * @param $pid
+     * @return bool|false|\PDOStatement|string|\think\Collection
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function getBrother($pid)
+    {
+        $cat = parent::where('id','=',$pid)->order('order')->select();
+        if(empty($cat))
+        {
+            return false;
+        }else{
+
+            $list = parent::where('pid','=',$cat['id'])->order('order')->select();
+            if(!empty($list))
+            {
+                return $list;
+            }else{
+                return false;
+            }
+        }
+    }
+
     //递归获取所有的子分类的ID
     public function getAllChild($array,$id){
         $arr = array();
