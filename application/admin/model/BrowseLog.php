@@ -17,5 +17,26 @@ class BrowseLog extends Basemodel
         parent::initialize();
         //TODO:自定义的初始化
     }
+    public function getAidAttr($value)
+    {
+        $arr = Article::get(['id'=>$value]);
+        if(empty($value))
+        {
+            return ;
+        }else{
+            return $arr['title'];
+        }
+    }
+
+    public function getMidAttr($value)
+    {
+        $arr = Member::get(['id'=>$value]);
+        if(empty($value))
+        {
+            return ;
+        }else{
+            return $arr['name'];
+        }
+    }
 
 }
