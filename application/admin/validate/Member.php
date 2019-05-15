@@ -28,4 +28,8 @@ class Member extends Validate
         'email' =>  '邮箱格式不对',
         'name.chs'  =>  '姓名只能是汉字',
     ];
+
+    protected $scene = [
+        'check'   =>  ['name','phone','email','user']
+    ];
 }

@@ -13,6 +13,7 @@ use app\admin\model\LoginLog;
 use app\admin\model\Order;
 use app\admin\model\Orderitem;
 use app\admin\model\BrowseLog;
+use app\admin\model\Card;
 
 
 
@@ -480,55 +481,94 @@ class Index extends Base
 
     }
 
+    protected function checkinfo($uid)
+    {
+        $member = Member::where('id',$uid)->find();
+
+        $data = array();
+        $data['name'] = $member['name'];
+        $data['phone'] = $member['phone'];
+        $data['email'] = $member['email'];
+        $data['user'] = $member['user'];
+
+        $result = $this->validate($data,'admin/Member.check');
+
+        if(true !== $result){
+            // 验证失败 输出错误信息
+            $re = false;
+        }else{
+            $re = true;
+        }
+        return $re;
+    }
+
+
+
+
+
     // /index/Index/addCart/uid/2/verif/q1ledf
     //  post 表单项  ///
     //  num  数量
     //  unit 单位
     //  specs 规格
     //  pid  文章id
+
     /**添加到购物车
      * @return string
      */
     public function addCart($uid, $verif)
     {
         $mid = $this->check($uid, $verif);
-
-        $data=array(
-            'num'=> Request::instance()->post('num'),
-            'unit'=> Request::instance()->post('unit'),
-            'specs'=> Request::instance()->post('specs'),
-            'pid'=> Request::instance()->post('pid')
-        );
-
-        $result = $this->validate($data,'admin/Cart');
-        if(true !== $result){
-            // 验证失败 输出错误信息
-            $re = array(
-                'status'=>-1,
-                'msg'=>$result
+        $isInfo = $this->checkinfo($uid);
+        if($isInfo)
+        {
+            $data=array(
+                'num'=> Request::instance()->post('num'),
+                'unit'=> Request::instance()->post('unit'),
+                'specs'=> Request::instance()->post('specs'),
+                'pid'=> Request::instance()->post('pid')
             );
-        }else{
-            $data['update'] = time();
-            $data['mid'] = $mid;
-            $item = Cart::get(['pid'=>$data['pid'], 'mid'=>$mid]);
-            if(empty($item))
-            {
-                $cart = new Cart;
-                $cart->allowField(true)->data($data)->save();
+
+            $result = $this->validate($data,'admin/Cart');
+            if(true !== $result){
+                // 验证失败 输出错误信息
                 $re = array(
-                    'status'=>1,
-                    'msg'=>'添加成功'
+                    'status'=>-1,
+                    'isInfo'=>$isInfo,
+                    'msg'=>$result
                 );
             }else{
-                $item['num'] = $item['num'] + $data['num'];
-                $item->save();
-                $re = array(
-                    'status'=>1,
-                    'msg'=>'修改成功'
-                );
-            }
+                $data['update'] = time();
+                $data['mid'] = $mid;
+                $item = Cart::get(['pid'=>$data['pid'], 'mid'=>$mid]);
+                if(empty($item))
+                {
+                    $cart = new Cart;
+                    $cart->allowField(true)->data($data)->save();
+                    $re = array(
+                        'status'=>1,
+                        'isInfo'=>$isInfo,
+                        'msg'=>'添加成功'
+                    );
+                }else{
+                    $item['num'] = $item['num'] + $data['num'];
+                    $item->save();
+                    $re = array(
+                        'status'=>1,
+                        'isInfo'=>$isInfo,
+                        'msg'=>'修改成功'
+                    );
+                }
 
+            }
+        }else{
+            $re = array(
+                'status'=>-1,
+                'isInfo'=>$isInfo,
+                'msg'=>'信息不完整'
+            );
         }
+
         return json_encode($re);
     }
 
@@ -544,6 +584,9 @@ class Index extends Base
     public function cartlist($uid, $verif)
     {
         $mid = $this->check($uid, $verif);
+        $isInfo = $this->checkinfo($uid);
+
+
         $cart = new Cart;
         $list = $cart->where('mid',$mid)->order('update','desc')->select();
 
@@ -559,17 +602,19 @@ class Index extends Base
                 $data[$k]['unit'] = $val['unit'];
                 $data[$k]['specs'] = $val['specs'];
             }
-
             $re = array(
-                'status'=>1,
-                'data'=>array(
-                    'list'=>$data
-                )
+                 'status'=>1,
+                 'isInfo'=>$isInfo,
+                 'data'=>array(
+                     'list'=>$data
+                 ),
             );
         }else{
             $re = array(
                 'status'=>0,
-                'data'=>'数据为空'
+                'isInfo'=>$isInfo,
+                'data'=>'数据为空',
+
             );
         }
         return json_encode($re);
@@ -655,7 +700,9 @@ class Index extends Base
 
         //获取post json 数据
         $json = file_get_contents('php://input');
+
         $re = json_decode($json, true);
+
 
         if($re['status'] == 0)
         {
@@ -731,7 +778,9 @@ class Index extends Base
             'pid'=> Request::instance()->post('pid')
         );
 
+
         $result = $this->validate($data,'admin/Cart');
+
         if(true !== $result){
             // 验证失败 输出错误信息
             $re = array(
@@ -754,7 +803,7 @@ class Index extends Base
 
             $re = array(
                 'status'=>1,
-                'msg'=>'修改成功'
+                'msg'=>'下单成功'
             );
         }
         return json_encode($re);
@@ -830,24 +879,33 @@ class Index extends Base
                 'name' => Request::instance()->post('name')
             );
 
-            $result = $this->validate($data,'admin/Member');
+            $me = Member::get(['user'=>$data['user']]);
+            if(empty($me))
+            {
+                $result = $this->validate($data,'admin/Member');
 
-            if(true !== $result){
-                // 验证失败 输出错误信息
+                if(true !== $result){
+                    // 验证失败 输出错误信息
+                    $re = array(
+                        'status'=>-1,
+                        'msg'=>$result
+                    );
+                }else{
+                    $data['password'] = md5($data['password']);
+
+                    $data['update'] = time();
+                    $member = new Member;
+                    $member->allowField(true)->data($data)->save();
+
+                    $re = array(
+                        'status'=>1,
+                        'msg'=>'添加成功'
+                    );
+                }
+            }else{
                 $re = array(
                     'status'=>-1,
-                    'msg'=>$result
-                );
-            }else{
-                $data['password'] = md5($data['password']);
-
-                $data['update'] = time();
-                $member = new Member;
-                $member->allowField(true)->data($data)->save();
-
-                $re = array(
-                    'status'=>1,
-                    'msg'=>'添加成功'
+                    'msg'=>'用户名已存在'
                 );
             }
             return json_encode($re);
@@ -871,7 +929,6 @@ class Index extends Base
 
         if(empty($member))
         {
-
             $re = array(
                 'status'=>0,
                 'data'=>'用户名密码错误'
@@ -891,7 +948,7 @@ class Index extends Base
             $data['phone'] = $member['phone'];
             $data['nickname'] = $member['nickname'];
             $data['city'] = $member['city'];
-
+            $data['isShow'] =$member->getData('levelid') == 1 ? true : false ;
             $login = LoginLog::where('mid', $member['id'])->order('update', 'desc')->find();
 
             if(empty($login))
@@ -906,10 +963,8 @@ class Index extends Base
                 'data'=>$data
             );
         }
-
         return json_encode($re);
     }
-
 
     // /index/Index/orderlist/uid/1/verif/q1ledf/page/1/order/update,desc
     // /index/Index/orderlist/uid/1/verif/q1ledf/page/1
@@ -929,7 +984,6 @@ class Index extends Base
     public function orderlist($uid, $verif, $page=1, $order = 'update,desc', $size=10)
     {
         $mid = $this->check($uid, $verif);
-
         try
         {
             $page = empty($page) ? 1:$page;
@@ -942,7 +996,7 @@ class Index extends Base
             $order = explode(',',$order);
             $list = $or->where('mid', $mid)->order($order[0], $order[1])->limit($limit[0], $limit[1])->select();
 
-            if(empty($art))
+            if(empty($list))
             {
                 $re = array(
                     'status'=>0,
@@ -977,6 +1031,7 @@ class Index extends Base
     }
 
     // /index/index/orderItem/uid/1/verif/q1ledf/id/8
+
     /** 订单详情
      * @param $uid
      * @param $verif
@@ -990,7 +1045,7 @@ class Index extends Base
     {
         $mid = $this->check($uid, $verif);
         //查出订单
-        $order = Order::get(['id'=>$id, 'mid'=>$mid]);
+        $order = Order::get(['id'=>$id]);
 
         if(empty($order))
         {
@@ -1028,13 +1083,25 @@ class Index extends Base
         return json_encode($re);
     }
 
+
     //订单删除 - 联系管理员 删除
 
     //浏览记录
-    //  /index/index/browseLogList/uid/1/verif/page/1/order/update,desc/size/10
-    //  /index/index/browseLogList/uid/1/verif/page/1/order/update,desc
-    //  /index/index/browseLogList/uid/1/verif/page/1
-    //  /index/index/browseLogList/uid/1/verif/
+    //  /index/index/browseLogList/uid/1/verif/ymado7/page/1/order/update,desc/size/10
+    //  /index/index/browseLogList/uid/1/verif/ymado7/page/1/order/update,desc
+    //  /index/index/browseLogList/uid/1/verif/ymado7/page/1
+    //  /index/index/browseLogList/uid/1/verif/ymado7
+    /** 浏览记录
+     * @param $uid
+     * @param $verif
+     * @param int $page
+     * @param string $order
+     * @param int $size
+     * @return string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
     public function browseLogList($uid, $verif, $page=1, $order = 'update,desc', $size=10)
     {
         $mid = $this->check($uid, $verif);
@@ -1042,10 +1109,13 @@ class Index extends Base
         $limit[0] = ($page-1)*$size;
         $limit[1] = $size;
         $order = explode(',',$order);
-        $loglist = new BrowseLog;
-        $req = $loglist->field('*,COUNT(*) as size')->where('mid',$mid)->group('aid')->order($order[0], $order[1])->limit($limit[0], $limit[1])->select();
 
-        if(empty($req))
+        //查找下级用户
+        $me = new Member();
+        $mlist = $me->where('parentid',$mid)->order($order[0], $order[1])->limit($limit[0], $limit[1])->select();
+
+
+        if(empty($mlist))
         {
             $re = array(
                 'status'=>0,
@@ -1053,11 +1123,19 @@ class Index extends Base
             );
         }else{
             $data = array();
-            foreach ($req as $k=>$val)
+            $blog = new BrowseLog;
+            foreach ($mlist as $k=>$val)
             {
-                $data[$k]['aid'] = $val['aid'];
-                $data[$k]['mid'] = $val['mid'];
-                $data[$k]['size'] = $val['size'];
+                //查找最近的浏览记录
+                $bl = $blog->where('mid',$val['id'])->order('update','desc')->find();
+                if(empty($bl))
+                {
+                    $data[$k]['latesttime'] = '没有查看产品';
+                }else{
+                    $data[$k]['latesttime'] = date("Y-m-d H:i:s", $bl['update']);
+                }
+                $data[$k]['name'] = empty($val['name']) ? $val['nickname']:$val['name'];
+                $data[$k]['mid'] = $val['id'];
             }
             $re = array(
                 'status'=>1,
@@ -1067,21 +1145,396 @@ class Index extends Base
         return json_encode($re);
     }
 
+    //浏览记录
+    //  /index/index/browseLogItem/uid/1/verif/ymado7/mid/41/page/1/order/update,desc/size/10
+    //  /index/index/browseLogItem/uid/1/verif/ymado7/mid/41/page/1/order/update,desc
+    //  /index/index/browseLogItem/uid/1/verif/ymado7/mid/41/page/1
+    //  /index/index/browseLogItem/uid/1/verif/ymado7/mid/41
+
+    /** 浏览记录详情
+     * @param $uid
+     * @param $verif
+     * @param $mid
+     * @param int $page
+     * @param string $order
+     * @param int $size
+     * @return string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function browseLogItem($uid, $verif,$mid, $page=1, $order = 'update,desc', $size=10)
+    {
+        $pid = $this->check($uid, $verif);
+
+        $limit[0] = ($page-1)*$size;
+        $limit[1] = $size;
+        $order = explode(',',$order);
+
+        $me = Member::get(['parentid'=>$pid, 'id'=>$mid]);
+        if(empty($me))
+        {
+            $re = array(
+                'status'=>0,
+                'data'=>'用户为空'
+            );
+        }else{
+            $blog = new BrowseLog;
+            $list = $blog->where('mid',$me['id'])->order($order[0], $order[1])->limit($limit[0], $limit[1])->select();
+            if(empty($list))
+            {
+                $re = array(
+                    'status'=>0,
+                    'data'=>'数据为空'
+                );
+            }else{
+                $data = array();
+                foreach ($list as $k=>$val)
+                {
+                    $data[$k]['title'] = $val['aid'];
+                    $data[$k]['aid'] = $val->getData('aid');
+                    $data[$k]['update'] = date("Y-m-d H:i:s", $val['update']);
+                }
+                $re = array(
+                    'status'=>1,
+                    'data'=>$data,
+                    'name'=>  empty($me['name']) ? $me['nickname']:$me['name']
+                );
+            }
+        }
+        return json_encode($re);
+    }
+
+
     //分享二维码
     public function shareQqrcode($uid, $verif)
     {
         $mid = $this->check($uid, $verif);
     }
 
-    //查看数据列表
-    public function  record($uid, $verif)
+    //  /index/Index/record/uid/41/verif/t4wz8s/page/1/order/update,desc
+
+    /**  查看数据列表
+     * @param $uid
+     * @param $verif
+     * @param int $page
+     * @param string $order
+     * @param int $size
+     * @param int $times
+     * @return string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function  record($uid, $verif, $page=1, $order = 'update,desc', $size=10,$times = 0)
+    {
+        $mid = $this->check($uid, $verif);
+        $limit[0] = ($page-1)*$size;
+        $limit[1] = $size;
+        $order = explode(',',$order);
+
+        if($times != 0)
+        {
+            //得到给定时间当月的起止时间
+            $beginThismonth=mktime(0,0,0,date('m',$times),1,date('Y',$times));
+            $endThismonth=mktime(23,59,59,date('m',$times),date('d',$times)+1,date('Y',$times));
+        }
+
+        $me = new Member();
+        $list = $me->field('*,(SELECT COUNT(*) FROM my_order WHERE my_member.id = my_order.mid) as num')->where('parentid',$mid)->order($order[0], $order[1])->limit($limit[0], $limit[1])->select();
+        if(empty($list))
+        {
+            $re = array(
+                'status'=>0,
+                'data'=>'数据为空'
+            );
+        }else{
+            $data = array();
+            foreach ($list as $k=>$val)
+            {
+                $data[$k]['id'] = $val['id'];
+                $data[$k]['name'] = $val['name'];
+                $data[$k]['num'] = $val['num'];
+            }
+            $re = array(
+                'status'=>1,
+                'data'=>$data
+            );
+        }
+        return json_encode($re);
+    }
+
+    // /index/Index/recordItem/uid/41/verif/q1ledf/sonid/40/page/1/order/update,desc
+
+    /** 查看数据详情
+     * @param $uid
+     * @param $verif
+     * @param int $sonid
+     * @param int $page
+     * @param string $order
+     * @param int $size
+     * @return string
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function  recordItem($uid, $verif,$sonid=0, $page=1, $order = 'update,desc', $size=10)
     {
         $mid = $this->check($uid, $verif);
 
-        
+        $me = new Member();
+        $da = $me->where('id',$sonid)->where('parentid',$mid)->find();
+        if(empty($da))
+        {
+            $re = array(
+                'status'=>0,
+                'data'=>'下级用户不存在'
+            );
+        }else{
+            $page = empty($page) ? 1:$page;
+            $order = empty($order) ? 'update,desc':$order;
+            $size = empty($size) ? 10:$size;
+
+            $or = new Order;
+            $limit[0] = ($page-1)*$size;
+            $limit[1] = $size;
+            $order = explode(',',$order);
+            $list = $or->where('mid', $da['id'])->order($order[0], $order[1])->limit($limit[0], $limit[1])->select();
+
+            if(empty($list))
+            {
+                $re = array(
+                    'status'=>0,
+                    'data'=>'数据为空'
+                );
+            }else{
+                $data = array();
+                foreach ($list as $k=>$val)
+                {
+                    $data[$k]['id'] = $val['id'];
+                    $data[$k]['ordernum'] = $val['ordernum'];
+                    $data[$k]['update'] = date("Y-m-d H:i:s", $val['update']);
+                }
+                $re = array(
+                    'status'=>1,
+                    'data'=>array(
+                        'list'=>$data
+                    )
+                );
+            }
+        }
+        return json_encode($re);
     }
 
 
-    //我的名片
-    //名片编辑
+    // /index/Index/card/uid/41/verif/q1ledf
+    /** 我的名片
+     * @param $uid
+     * @param $verif
+     * @return string
+     * @throws \think\exception\DbException
+     */
+    public function card($uid, $verif)
+    {
+        $mid = $this->check($uid, $verif);
+        $temp = Card::get(['mid' => $mid]);
+
+        if(empty($temp))
+        {
+            $re = array(
+                'status'=>0,
+                'data'=>'没有找到图片'
+            );
+        }else{
+            $data = array();
+
+            $data['imgurl'] = empty($temp['imgurl']) ? '/theme/images/headimg.png':$temp['imgurl'];
+            if(!strstr($data['imgurl'],'http'))
+            {
+                $data['imgurl'] = $this->http.$data['imgurl'];
+            }
+            $data['name'] = $temp['name'];
+            $data['phone'] = $temp['phone'];
+            $data['job'] = $temp['job'];
+            $data['address'] = $temp['address'];
+            $re = array(
+                'status'=>1,
+                'data'=>$data
+            );
+        }
+
+        return json_encode($re);
+    }
+
+    // /index/Index/cardEdit/uid/41/verif/q1ledf
+    /** 名片编辑
+     * @param $uid
+     * @param $verif
+     * @return string
+     * @throws \think\exception\DbException
+     */
+    public function cardEdit($uid, $verif)
+    {
+        $mid = $this->check($uid, $verif);
+
+        $data=array(
+            'imgurl'=> Request::instance()->post('imgurl'),
+            'name'=> Request::instance()->post('name'),
+            'phone'=> Request::instance()->post('phone'),
+            'job'=> Request::instance()->post('job'),
+            'address'=> Request::instance()->post('address')
+        );
+
+        $result = $this->validate($data,'admin/Card');
+
+        if(true !== $result){
+            // 验证失败 输出错误信息
+            $re = array(
+                'status'=>-1,
+                'msg'=>$result
+            );
+        }else{
+
+            $temp = Card::get(['mid' => $mid]);
+            if(empty($temp))
+            {
+                $temp = new Card;
+            }
+
+            $temp['imgurl'] = $data['imgurl'];
+            $temp['name'] = $data['name'];
+            $temp['phone'] = $data['phone'];
+            $temp['job'] = $data['job'];
+            $temp['address'] = $data['address'];
+
+            $temp['mid'] = $mid;
+            $temp->update = time();
+            $temp->save();
+
+            $re = array(
+                'status'=>1,
+                'data'=>'修改成功'
+            );
+        }
+        return json_encode($re);
+    }
+
+
+
+    //  /index/index/upImages/uid/1/verif/q1ledf/f/file
+    /** 上传图片
+     * @param $uid
+     * @param $verif
+     * @param $f
+     * @return string
+     */
+    public function upImages($uid, $verif,$f){
+
+        $mid = $this->check($uid, $verif);
+
+        if(!empty(request() -> file($f)))
+        {
+            $file = request() -> file($f);
+        }
+        if(!isset($file))
+        {
+            // 上传失败获取错误信息
+            $re = array(
+                'status'=>0,
+                'data'=>'没有找到图片'
+            );
+        }else{
+            $file->validate(['size'=>1024*1024*2,'ext'=>'jpg,png,gif']);
+            $info = $file->rule('date')->move(ROOT_PATH . 'public' . DS . 'uploads'. DS .'images');
+
+            if($info){
+                $re = array(
+                    'status'=>1,
+                    'data'=>array(
+                        'url'=> '/public/uploads/images/' . $info->getSaveName()
+                    )
+                );
+
+            }else{
+                // 上传失败获取错误信息
+                $re = array(
+                    'status'=>-1,
+                    'msg'=>$file->getError()
+                );
+            }
+        }
+        return json_encode($re);
+    }
+
+    public function upImagesBase64($uid, $verif){
+
+        $mid = $this->check($uid, $verif);
+
+        $base64 = Request::instance()->post('data');
+        if(empty($base64))
+        {
+        // 上传失败获取错误信息
+            $re = array(
+                'status'=>0,
+                'data'=>'没有收到图片'
+            );
+        }else{
+            $img = $this->base64_upload($base64);
+            if($img)
+            {
+                $re = array(
+                    'status'=>1,
+                    'data'=>$img
+                );
+            }else{
+                $re = array(
+                    'status'=>0,
+                    'data'=>'没有图片返回'
+                );
+            }
+
+        }
+        return json_encode($re);
+
+    }
+
+    protected function base64_upload($base64) {
+
+        $base64_image = str_replace(' ', '+', $base64);
+
+        //post的数据里面，加号会被替换为空格，需要重新替换回来，如果不是post的数据，则注释掉这一行
+        if (preg_match('/^(data:\s*image\/(\w+);base64,)/', $base64_image, $result)){
+
+
+            //匹配成功
+            $savename = date('Ymd') . DS . md5(microtime(true));
+
+            if($result[2] == 'jpeg'){
+                $image_name = $savename.'.jpg';
+                //纯粹是看jpeg不爽才替换的
+            }else{
+                $image_name = $savename.'.'.$result[2];
+            }
+
+            $image_dir = ROOT_PATH . 'public' . DS . 'uploads'. DS .'images'. DS .date('Ymd');
+            if(!file_exists($image_dir))
+            {
+                mkdir($image_dir, 0777, true);
+            }
+            $image_file = ROOT_PATH . 'public' . DS . 'uploads'. DS .'images'. DS .$image_name;
+
+            //服务器文件存储路径
+            if (file_put_contents($image_file, base64_decode(str_replace($result[1], '', $base64_image)))){
+                $path = DS .'public' . DS . 'uploads'. DS .'images'. DS .$image_name;
+                return str_replace(DS,'/',$path);
+
+            }else{
+                return false;
+            }
+        }else{
+
+            return false;
+        }
+    }
+
 }

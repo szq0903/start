@@ -232,4 +232,20 @@ class Members extends BaseMould
         return json_encode($data);
     }
 
+    public function reset($id)
+    {
+        $temp = $this->m->where('id', $id)->find();
+        if(empty($temp))
+        {
+            $this->error('您要重置的'.$this->mould['name'].'不存在！');
+        }else{
+            $temp['nickname'] = '';
+            $temp['headimgurl'] = '';
+            $temp['openid'] = '';
+            $temp['password'] = md5('123456');
+            $temp ->save();
+            $this->success('重置'.$this->mould['name'].'成功！');
+        }
+    }
+
 }

@@ -73,6 +73,7 @@
                             <td>
                                 <a class="fa fa-shopping-cart" title="添加订单" href="{:url('admin/members/order',['mid'=>$vo.id])}" data-toggle="modal" data-target=".bs-example-modal-photo"></a>
                                 <a class="fa fa-credit-card" title="名片" href="{:url('admin/members/card',['mid'=>$vo.id])}" data-toggle="modal" data-target=".bs-example-modal-photo"></a>
+                                <a class="fa fa-repeat" title="重置" href="{:url('admin/members/reset',['id'=>$vo.id])}"></a>
                                 <a class="fa fa-edit" href="{$vo.edit}"></a>
                                 <a class="fa fa-trash-o" href="{$vo.del}"></a>
                             </td>
