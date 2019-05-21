@@ -584,7 +584,7 @@ class Index extends Base
     public function cartlist($uid, $verif)
     {
         $mid = $this->check($uid, $verif);
-        $isInfo = $this->checkinfo($uid);
+        $isInfo = $this->checkinfo($mid);
 
 
         $cart = new Cart;
@@ -866,7 +866,7 @@ class Index extends Base
     /**注册用户
      * @return string
      */
-    public function register()
+    public function register($pid=0)
     {
         if (Request::instance()->isPost())
         {
@@ -878,8 +878,8 @@ class Index extends Base
                 'email'=> Request::instance()->post('email'),
                 'name' => Request::instance()->post('name')
             );
-
             $me = Member::get(['user'=>$data['user']]);
+
             if(empty($me))
             {
                 $result = $this->validate($data,'admin/Member');
@@ -912,6 +912,56 @@ class Index extends Base
         }
     }
 
+    /**完善用户
+     * @return string
+     */
+    public function perfect($uid, $verif)
+    {
+        if (Request::instance()->isPost())
+        {
+            $data=array(
+                'user'=> Request::instance()->post('account'),
+                'password'=> Request::instance()->post('password'),
+                'password_confirm'=> Request::instance()->post('password_confirm'),
+                'phone'=> Request::instance()->post('phone'),
+                'email'=> Request::instance()->post('email'),
+                'name' => Request::instance()->post('name')
+            );
+            $me = Member::get(['user'=>$data['user']]);
+
+            if(empty($me))
+            {
+                $result = $this->validate($data,'admin/Member');
+
+                if(true !== $result){
+                    // 验证失败 输出错误信息
+                    $re = array(
+                        'status'=>-1,
+                        'msg'=>$result
+                    );
+                }else{
+                    $data['password'] = md5($data['password']);
+
+                    $data['update'] = time();
+                    $mid = $this->check($uid, $verif);
+                    $member = Member::get($mid);
+                    $member->allowField(true)->data($data)->save();
+
+                    $re = array(
+                        'status'=>1,
+                        'msg'=>'添加成功'
+                    );
+                }
+            }else{
+                $re = array(
+                    'status'=>-1,
+                    'msg'=>'用户名已存在'
+                );
+            }
+            return json_encode($re);
+        }
+    }
+
     // /index/Index/member/uid/1/verif/q1ledf
 
     /**会员中心信息
@@ -925,12 +975,14 @@ class Index extends Base
     public function member($uid, $verif)
     {
         $mid = $this->check($uid, $verif);
+        $isInfo = $this->checkinfo($mid);
         $member = Member::where('id',$mid)->find();
 
         if(empty($member))
         {
             $re = array(
                 'status'=>0,
+                'isInfo'=>$isInfo,
                 'data'=>'用户名密码错误'
             );
         }else{
@@ -960,6 +1012,7 @@ class Index extends Base
 
             $re = array(
                 'status'=>1,
+                'isInfo'=>$isInfo,
                 'data'=>$data
             );
         }

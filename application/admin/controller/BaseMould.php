@@ -114,7 +114,6 @@ class BaseMould extends Base
     public function edit($id)
     {
 
-
         $temp = $this->m->where('id', $id)->find();
         //判断地区是否存在
         if(empty($temp))

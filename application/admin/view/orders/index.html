@@ -50,7 +50,7 @@
                             <td>{:date('Y-m-d',$vo.update)}</td>
                             <td>
                                 <a class="fa fa-list-alt" href="{:url('admin/orders/order',['id'=>$vo.id])}" data-toggle="modal" data-target=".bs-example-modal-photo"></a>
-                                <a style="display: none" class="fa fa-edit" href="{$vo.edit}"></a>
+                                <a class="fa fa-download" href="{:url('admin/orders/daochu',['id'=>$vo.id])}"></a>
                                 <a class="fa fa-trash-o" href="{$vo.del}"></a>
                             </td>
                         </tr>
