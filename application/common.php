@@ -176,13 +176,20 @@ function makeorder()
  * @return string
  */
 
-function htmltotext($string, $length)
-{
-    $string = strip_tags($string);
+function htmltotext($string, $length) {
+    $string=strip_tags($string);
+    $string = preg_replace("/\t/","",$string); //使用正则表达式替换内容，如：空格，换行，并将替换为空。
+    $string = preg_replace("/\r\n/","",$string);
+    $string = preg_replace("/\r/","",$string);
+    $string = preg_replace("/\n/","",$string);
+    $string = preg_replace("/ /","",$string);
+    $string = preg_replace("/  /","",$string);  //匹配html中的空格
+    $string = preg_replace("/&nbsp;/","",$string);
+
     preg_match_all("/[\x01-\x7f]|[\xc2-\xdf][\x80-\xbf]|\xe0[\xa0-\xbf][\x80-\xbf]|[\xe1-\xef][\x80-\xbf][\x80-\xbf]|\xf0[\x90-\xbf][\x80-\xbf][\x80-\xbf]|[\xf1-\xf7][\x80-\xbf][\x80-\xbf][\x80-\xbf]/", $string, $info);
     $j = 0;
     $wordscut = '';
-    for ($i = 0; $i < count($info[0]); $i++) {
+    for($i=0; $i<count($info[0]); $i++) {
         $wordscut .= $info[0][$i];
         $j = ord($info[0][$i]) > 127 ? $j + 2 : $j + 1;
         if ($j > $length - 3) {
@@ -191,6 +198,7 @@ function htmltotext($string, $length)
     }
     return join('', $info[0]);
 }
+
 
 //获取远程图片大小
 function getsize($url,$user='',$pw='')

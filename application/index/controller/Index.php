@@ -3,7 +3,7 @@ namespace app\index\controller;
 
 
 use think\Request;
-use think\Db;
+use think\Session;
 use app\admin\model\Sysinfo;
 use app\admin\model\Article;
 use app\admin\model\Category;
@@ -15,6 +15,8 @@ use app\admin\model\Orderitem;
 use app\admin\model\BrowseLog;
 use app\admin\model\Card;
 
+use Wechat\Common;
+use Wechat\WechatOauth;
 
 
 /* status  1为正常有数据  0为没有数据   -1 为错误
@@ -25,6 +27,7 @@ use app\admin\model\Card;
 class Index extends Base
 {
     public $http;
+    public $levelid = 2; //注册默认等级
 	public function _initialize()
 	{
         $this->http = 'http://'.$_SERVER['HTTP_HOST'];
@@ -33,7 +36,191 @@ class Index extends Base
 
 	public function index()
     {
+        /*
+        $wechatOauth = new WechatOauth();
+        $wechat = $wechatOauth->getOpenid();
+        print_r($wechat);
+        */
+    }
 
+    public function getJsSdkconfig($url= 'http://www.zwrhy.net/index/index/getJsSdkconfig')
+    {
+
+        if (Request::instance()->isPost())
+        {
+            $url = Request::instance()->post('url');
+        }
+        $wechat = new Common();
+        $timestamp = time();
+        $nonceStr = $wechat->createNoncestr();
+        $jsapi_ticket = $wechat->wx_get_jsapi_ticket();
+        $string = sprintf("jsapi_ticket=%s&noncestr=%s&timestamp=%s&url=%s", $jsapi_ticket, $nonceStr, $timestamp, $url);
+        //生成签名
+        $signature = sha1($string);
+
+        $data = array(
+            'debug'=> false,
+            'appid' => $wechat->appid,
+            'timestamp' => $timestamp,
+            'nonceStr' =>$nonceStr,
+            'jsapi_ticket'=>$jsapi_ticket,
+            'url'=>$url,
+            'signature' =>$signature
+        );
+
+        $re = array(
+            'status'=>1,
+            'data'=>$data
+        );
+        return json_encode($re);exit;
+
+        echo "<script src=\"http://res2.wx.qq.com/open/js/jweixin-1.4.0.js\"></script>
+<script>
+    wx.config({
+        debug: false, // 开启调试模式,调用的所有api的返回值会在客户端alert出来，若要查看传入的参数，可以在pc端打开，参数信息会通过log打出，仅在pc端时才会打印。
+        appId: '{$data["appid"]}', // 必填，公众号的唯一标识
+        timestamp: '{$data["timestamp"]}', // 必填，生成签名的时间戳
+        nonceStr: '{$data["nonceStr"]}', // 必填，生成签名的随机串
+        signature: '{$data["signature"]}',// 必填，签名，见附录1
+        jsApiList: ['getLocation'] // 必填，需要使用的JS接口列表，所有JS接口列表见附录2
+    });
+
+
+
+     wx.ready(function () {
+    wx.checkJsApi({
+        jsApiList: [
+            'getLocation'
+        ],
+        
+        success: function (res) {
+            // alert(JSON.stringify(res));
+            // alert(JSON.stringify(res.checkResult.getLocation));
+            if (res.checkResult.getLocation == false) {
+                console.log('你的微信版本太低，不支持微信JS接口，请升级到最新的微信版本！');
+                return;
+            }
+        }
+    }); 
+    wx.error(function(res){
+        alert(\"接口调取失败\")
+    });
+    wx.getLocation({
+        type: 'wgs84', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+      success: function (res) {
+        console.log(JSON.stringify(res));
+        baiduLocation(res.longitude, res.latitude);
+      },
+      cancel: function (res) {
+        alert('用户拒绝授权获取地理位置');
+      }
+    });
+});
+    
+    function baiduLocation(longitude, latitude){
+        var json = GPS.bd_encrypt(latitude, longitude);
+        console.log(\"json\" + JSON.stringify(json));
+        var myGeo = new BMap.Geocoder();
+        // 根据坐标得到地址描述
+        myGeo.getLocation(new BMap.Point(json.lon, json.lat), function(result){
+            if (result){
+                Tip.layerTip(\"您当前的位置：\" + result.address);
+//              alert(JSON.stringify(result));
+            }
+        });
+    }
+</script>";
+
+
+        //print_r($data);
+    }
+
+    /**
+     * 获取授权后的用户资料
+     * @param string $access_token
+     * @param string $openid
+     * @return bool|array {openid,nickname,sex,province,city,country,headimgurl,privilege,[unionid]}
+     * 注意：unionid字段 只有在用户将公众号绑定到微信开放平台账号后，才会出现。建议调用前用isset()检测一下
+     */
+    public function getOauthUserInfo($access_token, $openid) {
+        $wechatOauth = new WechatOauth();
+        $data1 = $wechatOauth->getOauthUserInfo($access_token, $openid);
+        $data = array(
+            'status'=>1,
+            'data'=>$data1
+        );
+        return json_encode($data);
+    }
+
+    /**
+     * 通过 code 获取 AccessToken 和 openid
+     * @return bool|array
+     */
+    public function getOauthAccessToken($code)
+    {
+        $wechatOauth = new WechatOauth();
+        $data1 = $wechatOauth->getOauthAccessToken($code);
+        $data = array(
+            'status'=>1,
+            'data'=>$data1
+        );
+        return json_encode($data);
+    }
+    //获取 code地址
+    public function getOauthRedirect($baseUrl='')
+    {
+        $wechatOauth = new WechatOauth();
+        $url = $wechatOauth->getOauthRedirect($baseUrl,"STATE","snsapi_userinfo"); // 获取 code地址
+        $data = array(
+            'status'=>1,
+            'data'=>$url
+        );
+        return json_encode($data);
+    }
+
+    public function getOpenid(){
+        $wechatOauth = new WechatOauth();
+        $wechat = $wechatOauth->getOpenid();
+
+
+        $data = array(
+            'status'=>1,
+            'data'=>$wechat
+        );
+        return json_encode($data);
+
+    }
+
+    public function autoRegistermByOpenid ()
+    {
+        $wechat = $this->getOpenid();
+
+        $m = Member::get(['openid'=>$wechat['openid']]);
+        if(empty($m))
+        {
+            $m = new Member;
+
+            $m->nickname = $wechat['nickname'];
+            $m->headimgurl = $wechat['head_pic'];
+            $m->nickname = $wechat['nickname'];
+            $m->save();
+        }else{
+
+
+        }
+
+        /*
+        (
+        [access_token] => 22_AIhn3QfU6tvz8RsUzK6AD3H7nXbrjAC-G3JaVFKTqEEb6GqbJabnBzQ7ZKNolPkYMcHvaawsHbvzINibvPhigQ
+    [expires_in] => 7200
+    [refresh_token] => 22_tnEevEsBcc9pX4mOBxw-k0uEEd-FWtuG2qK3B1rO7X7r5HUne67eWbL6OyZNd6ghkxkmLTHwo8-kktV57PjhqA
+    [openid] => oLFdh1T8B6ArWeP8QFz3uBS4aNAY
+    [scope] => snsapi_userinfo
+    [nickname] => 神码
+    [sex] => 1
+    [head_pic] => http://thirdwx.qlogo.cn/mmopen/vi_32/JOpvjFoeYQJrJn0E8UuNiboxU6m85v88rw0VkzI7lkJ3c2U773JG1Y6RcaAOX7yA6zygBwuWeqgVc6n8IfbqvXQ/132
+    [subscribe] => 0
+    [oauth] => weixin*/
     }
 
 	public function indexabout()
@@ -384,28 +571,28 @@ class Index extends Base
 
             if(empty($list))
             {
-                $re = array(
-                    'status'=>0,
-                    'data'=>'数据为空'
-                );
-            }else{
-                $data = array();
-                foreach ($list as $k=>$val)
-                {
-                    $data[$k]['id'] = $val['id'];
-                    $data[$k]['name'] = $val['name'];
-                    $data[$k]['img'] = empty($val['img']) ? '/theme/images/nopic.jpg':$val['img'];
-                    $data[$k]['img'] = $this->http.$data[$k]['img'];
-                    $data[$k]['keywords'] = $val['keywords'];
-                    $data[$k]['description'] = $val['description'];
-                }
-                $re = array(
-                    'status'=>1,
-                    'data'=>array(
-                        'list'=>$data
-                    )
-                );
+                $cateinfo = $cate->where('id',$cid)->find();
+                $list = $cate->where('pid', $cateinfo['pid'])->order($order[0], $order[1])->limit($limit[0], $limit[1])->select();
+
             }
+
+            $data = array();
+            foreach ($list as $k=>$val)
+            {
+                $data[$k]['id'] = $val['id'];
+                $data[$k]['name'] = $val['name'];
+                $data[$k]['img'] = empty($val['img']) ? '/theme/images/nopic.jpg':$val['img'];
+                $data[$k]['img'] = $this->http.$data[$k]['img'];
+                $data[$k]['keywords'] = $val['keywords'];
+                $data[$k]['description'] = $val['description'];
+            }
+            $re = array(
+                'status'=>1,
+                'data'=>array(
+                    'list'=>$data
+                )
+            );
+
         } //捕获异常
         catch(Exception $e)
         {
@@ -800,7 +987,6 @@ class Index extends Base
             $data['update'] = time();
             $data['oid'] = $order->id;
             $Orderitem->allowField(true)->data($data)->save();
-
             $re = array(
                 'status'=>1,
                 'msg'=>'下单成功'
@@ -809,20 +995,62 @@ class Index extends Base
         return json_encode($re);
     }
 
+    public  function wxlogin()
+    {
+        if (Request::instance()->isPost()) {
+            $nickname = Request::instance()->post('nickname');
+            $headimgurl = Request::instance()->post('headimgurl');
+            $openid = Request::instance()->post('openid');
+            $city = Request::instance()->post('city');
+
+            $member = Member::where('openid',$openid)->find();
+            if(empty($member))
+            {
+                $member =  new Member();
+                $member->openid = $openid;
+                $member->nickname = $nickname;
+                $member->headimgurl = $headimgurl;
+                $member->levelid = $this->levelid;
+                $member->update = time();
+            }
+            $verif = randomkeys(6);
+            $member->city = $city;
+            $member->verif = $verif;
+            $member->save();
+
+            //添加登陆记录
+            $login = new LoginLog;
+            $login['mid'] = $member['id'];
+            $login['update'] = time();
+            $login->save();
+
+            $data = array();
+            $data['uid'] = $member['id'];
+            $data['verif'] = $verif;
+            $data['openid'] = $member['openid'];
+            $data['nickname'] = $member['nickname'];
+            $data['headimgurl'] = $member['headimgurl'];
+            $re = array(
+                'status'=>1,
+                'data'=>$data
+            );
+            return json_encode($re);
+        }
+
+    }
 
 
     //  /index/index/login/
     //  POST 提交数据
     //  account  用户名  password  密码
-
     public function login()
     {
         if (Request::instance()->isPost())
         {
             $user  =  Request::instance()->post('account');
             $password  =   Request::instance()->post('password');
+            $city  =   Request::instance()->post('city');
             $password = md5($password);
-
 
             $member = Member::where('user',$user)->where('password',$password)->find();
             if(empty($member))
@@ -833,6 +1061,7 @@ class Index extends Base
                 );
             }else{
                 $verif = randomkeys(6);
+                $member->city = $city;
                 $member->verif = $verif;
                 $member->save();
 
@@ -845,6 +1074,9 @@ class Index extends Base
                 $data = array();
                 $data['uid'] = $member['id'];
                 $data['verif'] = $verif;
+                $data['openid'] = $member['openid'];
+                $data['nickname'] = $member['nickname'];
+                $data['headimgurl'] = $member['headimgurl'];
                 $re = array(
                     'status'=>1,
                     'data'=>$data
@@ -870,14 +1102,30 @@ class Index extends Base
     {
         if (Request::instance()->isPost())
         {
+
+            $parentid = Request::instance()->post('parentid');
+            if($parentid == 'undefined')
+            {
+                $parentid = 0;
+            }
             $data=array(
                 'user'=> Request::instance()->post('account'),
                 'password'=> Request::instance()->post('password'),
                 'password_confirm'=> Request::instance()->post('password_confirm'),
                 'phone'=> Request::instance()->post('phone'),
                 'email'=> Request::instance()->post('email'),
-                'name' => Request::instance()->post('name')
+                'name' => Request::instance()->post('name'),
+                'city'  =>  Request::instance()->post('city'),
+                'nickname'  =>  Request::instance()->post('nickname'),
+                'headimgurl'  =>  Request::instance()->post('headimgurl'),
+                'openid'  =>  Request::instance()->post('openid'),
+                'parentid'  =>  $parentid,
+                'levelid' =>  $this->levelid
+
             );
+
+
+
             $me = Member::get(['user'=>$data['user']]);
 
             if(empty($me))
@@ -891,10 +1139,28 @@ class Index extends Base
                         'msg'=>$result
                     );
                 }else{
-                    $data['password'] = md5($data['password']);
 
+                    /*
+                    $re = $this->getOpenid();
+                    $re = json_decode($re,true);
+                    $data['nickname'] = $re['data']['nickname'];
+                    $data['headimgurl'] = $re['data']['head_pic'];
+                    $data['openid'] = $re['data']['openid'];
+                   */
+
+                    $data['password'] = md5($data['password']);
                     $data['update'] = time();
-                    $member = new Member;
+
+                    $member = Member::get(['user'=>$data['user']]);
+                    if(empty($member))
+                    {
+                        $member = Member::get(['openid'=>$data['openid']]);
+                        if(empty($member))
+                        {
+                            $member = new Member;
+                        }
+                    }
+
                     $member->allowField(true)->data($data)->save();
 
                     $re = array(
@@ -1258,6 +1524,37 @@ class Index extends Base
         return json_encode($re);
     }
 
+    // /index/Index/addBrowseLog/uid/2/verif/q1ledf/aid/18
+    //  aid  文章id
+
+    /**添加浏览记录
+     * @return string
+     */
+    public function addBrowseLog($uid, $verif,$aid)
+    {
+        $mid = $this->check($uid, $verif);
+        if(empty($mid))
+        {
+            $re = array(
+                'status'=>0,
+                'msg'=>'登陆失败，请重新登陆。'
+            );
+        }else{
+            $blog = new BrowseLog;
+            $blog->aid = $aid;
+            $blog->mid = $mid;
+            $blog->update = time();
+            $blog->save();
+
+            $re = array(
+                'status'=>1,
+                'msg'=>'添加成功'
+            );
+        }
+
+
+        return json_encode($re);
+    }
 
     //分享二维码
     public function shareQqrcode($uid, $verif)
@@ -1389,7 +1686,8 @@ class Index extends Base
      */
     public function card($uid, $verif)
     {
-        $mid = $this->check($uid, $verif);
+        //$mid = $this->check($uid, $verif);
+        $mid = $uid;
         $temp = Card::get(['mid' => $mid]);
 
         if(empty($temp))

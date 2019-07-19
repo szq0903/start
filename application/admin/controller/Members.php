@@ -44,9 +44,9 @@ class Members extends BaseMould
         {
             if(empty($query))
             {
-                $this->list = $this->m->whereOr('parentid', '')->whereOr('parentid', Null)->order($this->order)->paginate($this->site);
+                $this->list = $this->m->whereOr('parentid', 0)->whereOr('parentid', Null)->order($this->order)->paginate($this->site);
             }else{
-                $this->list = $this->m->whereOr('parentid', '')->whereOr('parentid', Null)->where('name|phone', 'like', "%{$query}%")->order($this->order)->paginate($this->site);
+                $this->list = $this->m->whereOr('parentid', 0)->whereOr('parentid', Null)->where('name|phone', 'like', "%{$query}%")->order($this->order)->paginate($this->site);
             }
         }else{
             if(empty($query))

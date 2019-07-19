@@ -15,11 +15,11 @@ return [
     // 服务器地址
     'hostname'        => '127.0.0.1',
     // 数据库名
-    'database'        => 'start',
+    'database'        => 'zwrhy_net',
     // 用户名
-    'username'        => 'root',
+    'username'        => 'zwrhy_net',
     // 密码
-    'password'        => '123456',
+    'password'        => 'a6cY6FAmTKHNs7dL',
     // 端口
     'hostport'        => '',
     // 连接dsn

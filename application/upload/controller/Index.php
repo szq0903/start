@@ -213,17 +213,14 @@ class Index extends Controller
         }
 
         //检查是否不允许的文件格式
-        if(in_array($this->getFileExt(), $this->config["allowFiles"]))
+        if(!in_array($this->getFileExt($file->getInfo()['name']), $config["allowFiles"]))
         {
             $stateInfo = $this->stateMap['ERROR_TYPE_NOT_ALLOWED'];
-            return;
+
+            return $stateInfo;
 
         }
         //创建目录失败
-
-
-
-
 
         $info = $file->rule('date')->move(ROOT_PATH . 'public' . DS . 'uploads'. DS .$config['type']);
 
@@ -348,6 +345,13 @@ class Index extends Controller
         }
         return $files;
     }
-
+    /**
+     * 获取文件扩展名
+     * @return string
+     */
+    private function getFileExt($fileName)
+    {
+        return strtolower(strrchr($fileName, '.'));
+    }
 
 }

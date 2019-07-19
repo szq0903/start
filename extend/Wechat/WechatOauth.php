@@ -23,7 +23,16 @@ class WechatOauth extends Common {
     public function getOpenid()
     {
 		
-        if(session('openid')<>'') return session('openid');
+        if(session('openid')<>'')
+        {
+            $data =array(
+                'openid'=>session('openid'),
+                'nickname'=>session('nickname'),
+                'head_pic'=>session('head_pic')
+            );
+            return $data;
+        }
+
         if (!isset($_GET['code'])){
             //触发微信返回code码
             //$baseUrl = 'http://'.$_SERVER['HTTP_HOST'].$_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING'];
@@ -35,7 +44,7 @@ class WechatOauth extends Common {
             //上面获取到code后这里跳转回来
             $code = $_GET['code'];
             $data = $this->getOauthAccessToken($code);//获取网页授权access_token和用户openid
-		
+
             $data2 = $this->getOauthUserInfo($data['access_token'],$data['openid']);//获取微信用户信息
 //            var_dump($data2);exit;
             $data['nickname'] = empty($data2['nickname']) ? '微信用户' : trim($data2['nickname']);
@@ -47,9 +56,9 @@ class WechatOauth extends Common {
 			}else{
 				$data['subscribe']=0;
 			}
-            
-            //$_SESSION['openid'] = $data['openid'];//session openid
 			session('openid', $data['openid']);
+            session('nickname', $data['nickname']);
+            session('head_pic', $data['head_pic']);
             $data['oauth'] = 'weixin';
             if(isset($data2['unionid'])){
                 $data['unionid'] = $data2['unionid'];
@@ -57,6 +66,7 @@ class WechatOauth extends Common {
             return $data;
         }
     }
+
 
     /**
      * 获取当前的url 地址
@@ -69,6 +79,7 @@ class WechatOauth extends Common {
         $relate_url = isset($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : $php_self.(isset($_SERVER['QUERY_STRING']) ? '?'.$_SERVER['QUERY_STRING'] : $path_info);
         return $sys_protocal.(isset($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : '').$relate_url;
     }
+
     /**
      * Oauth 授权跳转接口
      * @param string $callback 授权回跳地址

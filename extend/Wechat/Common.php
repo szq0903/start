@@ -6,7 +6,7 @@
  * Time: 5:15 PM
  */
 namespace Wechat;
-use think\Db;
+use app\admin\model\Sysinfo;
 
 class Common{
     /** API接口URL需要使用此前缀 */
@@ -28,7 +28,7 @@ class Common{
     public function __construct()
     {
         //方法一：使用数据库存储配置
-        $this->wechat_config = $this->setConfigByDb();
+        $this->setConfigByDb();
         $this->appid = $this->wechat_config['appid'];
         $this->appsecret = $this->wechat_config['appsecret'];
         //var_dump($this->appsecret);exit;
@@ -43,7 +43,11 @@ class Common{
      */
     public function setConfigByDb()
     {
-        return Db::name('sysinfo')->where('id=1')->find();
+        $appid = Sysinfo::get(['fieldname'=>'appid']);
+        $this->wechat_config['appid'] = $appid['val'];
+
+        $appsecret = Sysinfo::get(['fieldname'=>'appsecret']);
+        $this->wechat_config['appsecret'] = $appsecret['val'];
 
     }
 
@@ -79,10 +83,28 @@ class Common{
         $web_expires = time() + 7000; // 提前200秒过期
 
         //存储access_token 和web_expires ,通过判断web_expires是否过期，然后是否请求
-        cache('access_token', $this->access_token, $web_expires);
+        setcookie('access_token', $this->access_token, $web_expires);
 
         return $return['access_token'];
     }
+
+    //获取微信公众号ticket
+    public function wx_get_jsapi_ticket()
+    {
+        if (isset($_COOKIE["ticket"]))
+        {
+            $res['ticket'] = $_COOKIE["ticket"];
+        }else{
+            $url = sprintf("https://api.weixin.qq.com/cgi-bin/ticket/getticket?access_token=%s&type=jsapi", $this->get_access_token());
+            $res = $this->httpRequest($url,'GET');
+            $res = json_decode($res, true);
+            //这里应该把access_token缓存起来，至于要怎么缓存就看各位了，有效期是7200s
+            setcookie("ticket", $res['ticket'], time()+7200);
+        }
+
+        return $res['ticket'];
+    }
+
 
 
     /**
